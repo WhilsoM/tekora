@@ -1,0 +1,22 @@
+version: "3"
+
+tasks:
+  lint:
+    desc: Check Go code quality
+    cmds:
+      - golangci-lint run ./...
+
+  fmt:
+    desc: Format Go code
+    cmds:
+      - golangci-lint fmt
+
+  test:
+    desc: Run tests
+    cmds:
+      - go test ./...
+
+  tidy:
+    desc: Update Go dependencies
+    cmds:
+      - go mod tidy
