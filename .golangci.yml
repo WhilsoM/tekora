@@ -1,0 +1,23 @@
+version: "2"
+
+linters:
+  default: none
+
+  enable:
+    - errcheck
+    - govet
+    - staticcheck
+    - unused
+    - ineffassign
+    - gosec
+    - gocritic
+    - nestif
+
+  settings:
+    nestif:
+      min-complexity: 5
+
+formatters:
+  enable:
+    - gofmt
+    - goimports
