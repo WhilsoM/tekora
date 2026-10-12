@@ -20,3 +20,8 @@ tasks:
     desc: Update Go dependencies
     cmds:
       - go mod tidy
+
+  run:gateway:
+    desc: Run api-gateway service
+    cmds:
+      - go run ./services/gateway/cmd/api/main.go
