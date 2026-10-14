@@ -4,6 +4,7 @@ import (
 	"log"
 	"net"
 	userpb "tekora/pkg/gen/user"
+	"tekora/services/user/internal/adapters/memory"
 	"tekora/services/user/internal/adapters/transport"
 	"tekora/services/user/internal/core"
 
@@ -18,7 +19,8 @@ func main() {
 
 	grpcServer := grpc.NewServer()
 
-	svc := core.NewUserService()
+	repo := memory.NewMemoryRepository()
+	svc := core.NewUserService(repo)
 	grpcTransport := transport.NewServer(svc)
 
 	userpb.RegisterUserServiceServer(grpcServer, grpcTransport)
