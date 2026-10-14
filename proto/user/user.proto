@@ -1,12 +1,12 @@
 syntax = "proto3";
 
-package users;
+package user;
 
-option go_package = "tekora/pkg/gen;userspb";
+option go_package = "tekora/pkg/gen;userpb";
 
 import "google/protobuf/timestamp.proto";
 
-service UsersService {
+service UserService {
     rpc RegisterUser(RegisterUserRequest) returns (RegisterUserResponse);
 }
 
