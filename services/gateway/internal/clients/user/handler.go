@@ -6,6 +6,7 @@ import (
 	"log/slog"
 	"net/http"
 	userpb "tekora/pkg/gen/user"
+	"tekora/services/gateway/internal/httpjson"
 	"time"
 
 	"github.com/go-chi/chi/v5"
@@ -35,7 +36,7 @@ func (h *UserHandler) RegisterUser(
 	decoder := json.NewDecoder(r.Body)
 	decoder.DisallowUnknownFields()
 	if err := decoder.Decode(&req); err != nil {
-		http.Error(w, "Invalid JSON", http.StatusBadRequest)
+		httpjson.WriteJSONError(w, http.StatusBadRequest, "register_user_bad_request", "invalid request")
 		return
 	}
 
@@ -51,16 +52,12 @@ func (h *UserHandler) RegisterUser(
 	if err != nil {
 		slog.Error("failed to register user", "error", err)
 
-		http.Error(
-			w,
-			"User service unavailable",
-			http.StatusBadGateway,
-		)
+		httpjson.WriteJSONError(w, http.StatusBadGateway, "register_user_service_unavailable", "service is unavailable")
 		return
 	}
 
 	if registeredUser == nil || registeredUser.GetCreatedAt() == nil {
-		http.Error(w, "Invalid service response", http.StatusBadGateway)
+		httpjson.WriteJSONError(w, http.StatusBadGateway, "register_bad_gateway", "Invalid service response")
 		return
 	}
 
@@ -71,10 +68,7 @@ func (h *UserHandler) RegisterUser(
 		CreatedAt:   registeredUser.GetCreatedAt().AsTime(),
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusCreated)
-
-	if err := json.NewEncoder(w).Encode(res); err != nil {
+	if err := httpjson.MyJSONResponse(w, http.StatusCreated, res); err != nil {
 		slog.Error("failed to encode response", "error", err)
 	}
 }
@@ -89,11 +83,7 @@ func (h *UserHandler) GetUserByID(
 	if err != nil {
 		slog.Error("failed to get user", "error", err)
 
-		http.Error(
-			w,
-			"User service unavailable",
-			http.StatusBadGateway,
-		)
+		httpjson.WriteJSONError(w, http.StatusBadRequest, "get_user_bad_request", "invalid request")
 		return
 	}
 
@@ -105,10 +95,7 @@ func (h *UserHandler) GetUserByID(
 		CreatedAt:   userRes.GetCreatedAt().AsTime(),
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusCreated)
-
-	if err := json.NewEncoder(w).Encode(res); err != nil {
+	if err := httpjson.MyJSONResponse(w, http.StatusOK, res); err != nil {
 		slog.Error("failed to encode response", "error", err)
 	}
 }
