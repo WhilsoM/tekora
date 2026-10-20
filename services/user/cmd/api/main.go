@@ -21,7 +21,7 @@ func main() {
 
 	repo := memory.NewMemoryRepository()
 	svc := core.NewUserService(repo)
-	grpcTransport := transport.NewServer(svc)
+	grpcTransport := transport.NewUserServer(svc)
 
 	userpb.RegisterUserServiceServer(grpcServer, grpcTransport)
 

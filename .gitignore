@@ -1,0 +1,74 @@
+
+# =========================
+# Go
+# =========================
+
+# Compiled binaries
+/bin/
+/build/
+/dist/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+# Test coverage and profiling
+coverage.out
+coverage.html
+*.prof
+*.pprof
+
+# Go workspace
+go.work
+go.work.sum
+
+# =========================
+# Environment and secrets
+# =========================
+
+.env
+.env.*
+!.env.example
+!.env.*.example
+
+# Private keys and certificates
+*.pem
+*.key
+*.p12
+*.pfx
+
+# =========================
+# IDEs and editors
+# =========================
+
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# =========================
+# Operating systems
+# =========================
+
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# =========================
+# Logs and temporary files
+# =========================
+
+*.log
+tmp/
+temp/
+
+# =========================
+# Docker local overrides
+# =========================
+
+docker-compose.override.yml
+compose.override.yaml

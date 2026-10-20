@@ -8,6 +8,10 @@ import "google/protobuf/timestamp.proto";
 
 service UserService {
     rpc RegisterUser(RegisterUserRequest) returns (RegisterUserResponse);
+    rpc LoginUser(LoginUserRequest) returns (LoginUserResponse);
+    rpc GetUserByID(GetUserByIDRequest) returns (GetUserByIDResponse);
+    rpc UpdateUserByID(UpdateUserByIDRequest) returns (UpdateUserByIDResponse);
+    rpc DeleteUser(DeleteUserRequest) returns (DeleteUserResponse);
 }
 
 message RegisterUserRequest {
@@ -19,5 +23,54 @@ message RegisterUserResponse {
     uint32 id = 1;
     string phone_number = 2;
     string full_name = 3;
+    google.protobuf.Timestamp created_at = 4;
+}
+
+message LoginUserRequest {
+    string phone_number = 1;
+    string full_name = 2;
+}
+
+message LoginUserResponse {
+    uint32 id = 1;
+    string phone_number = 2;
+    string full_name = 3;
+    string address = 4;
     google.protobuf.Timestamp created_at = 5;
+}
+
+message GetUserByIDRequest {
+    uint32 id = 1;
+}
+
+message GetUserByIDResponse {
+    uint32 id = 1;
+    string phone_number = 2;
+    string full_name = 3;
+    string address = 4;
+    google.protobuf.Timestamp created_at = 5;
+}
+
+
+message UpdateUserByIDRequest {
+    uint32 id = 1;
+    optional string phone_number = 2;
+    optional string full_name = 3;
+    optional string address = 4;
+}
+
+
+message UpdateUserByIDResponse {
+    uint32 id = 1;
+    string phone_number = 2;
+    string full_name = 3;
+    string address = 4;
+    google.protobuf.Timestamp created_at = 5;
+}
+
+message DeleteUserRequest {
+    uint32 id = 1;
+}
+
+message DeleteUserResponse {
 }
