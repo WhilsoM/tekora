@@ -38,9 +38,6 @@ func (server *userServer) RegisterUser(ctx context.Context, req *userpb.Register
 
 	user, err := server.svc.CreateUser(ctx, payload)
 	if err != nil {
-		return nil, err
-	}
-	if err != nil {
 		switch {
 		case errors.Is(err, core.ErrPhoneAlreadyExists):
 			return nil, status.Error(
@@ -57,7 +54,8 @@ func (server *userServer) RegisterUser(ctx context.Context, req *userpb.Register
 		default:
 			return nil, status.Error(
 				codes.Internal,
-				"internal server error")
+				"internal server error",
+			)
 		}
 	}
 
