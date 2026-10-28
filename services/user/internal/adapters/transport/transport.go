@@ -67,8 +67,14 @@ func (server *userServer) RegisterUser(ctx context.Context, req *userpb.Register
 	}, nil
 }
 
-// TODO: implement endpoints
 func (server *userServer) LoginUser(ctx context.Context, req *userpb.LoginUserRequest) (*userpb.LoginUserResponse, error) {
+	payload := core.User{
+		FullName:    req.GetFullName(),
+		PhoneNumber: req.GetPhoneNumber(),
+	}
+
+	_ = payload
+
 	return &userpb.LoginUserResponse{}, nil
 }
 
