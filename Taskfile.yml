@@ -25,3 +25,136 @@ tasks:
     desc: Run api-gateway service
     cmds:
       - go run ./services/gateway/cmd/api/main.go
+
+  # --- Общие проверки ---
+
+  migrate:check-service:
+    desc: Проверить существование сервиса
+    internal: true
+    silent: true
+    requires:
+      vars: [SERVICE]
+    cmds:
+      - |
+        if [ ! -d "services/{{.SERVICE}}" ]; then
+          echo "Ошибка: сервис '{{.SERVICE}}' не найден в services/"
+          exit 1
+        fi
+
+  migrate:check-env:
+    desc: Проверить сервис, каталог миграций и .env
+    internal: true
+    silent: true
+    deps:
+      - migrate:check-service
+    requires:
+      vars: [SERVICE]
+    vars:
+      MIGRATIONS_DIR: services/{{.SERVICE}}/migrations
+      ENV_FILE: services/{{.SERVICE}}/.env
+    cmds:
+      - |
+        if [ ! -f "{{.ENV_FILE}}" ]; then
+          echo "Ошибка: файл {{.ENV_FILE}} не найден"
+          exit 1
+        fi
+
+        if [ ! -d "{{.MIGRATIONS_DIR}}" ]; then
+          echo "Ошибка: каталог {{.MIGRATIONS_DIR}} не найден"
+          echo "Сначала создай миграцию через task migrate:create SERVICE={{.SERVICE}} -- migration_name"
+          exit 1
+        fi
+
+  # --- Создание миграций ---
+
+  migrate:create:
+    desc: Создать миграцию для сервиса
+    deps:
+      - migrate:check-service
+    requires:
+      vars: [SERVICE]
+    vars:
+      MIGRATIONS_DIR: services/{{.SERVICE}}/migrations
+    cmds:
+      - |
+        if [ -z "{{.CLI_ARGS}}" ]; then
+          echo "Использование: task migrate:create SERVICE={{.SERVICE}} -- create_table_users"
+          exit 1
+        fi
+      - mkdir -p "{{.MIGRATIONS_DIR}}"
+      - goose -dir "{{.MIGRATIONS_DIR}}" create {{.CLI_ARGS}} sql
+
+  # --- Применение и откат миграций ---
+
+  migrate:up:
+    desc: Применить все новые миграции сервиса
+    deps:
+      - migrate:check-env
+    requires:
+      vars: [SERVICE]
+    vars:
+      MIGRATIONS_DIR: services/{{.SERVICE}}/migrations
+      ENV_FILE: services/{{.SERVICE}}/.env
+    cmds:
+      - goose -env "{{.ENV_FILE}}" -dir "{{.MIGRATIONS_DIR}}" up
+
+  migrate:down:
+    desc: Откатить последнюю миграцию сервиса
+    deps:
+      - migrate:check-env
+    requires:
+      vars: [SERVICE]
+    vars:
+      MIGRATIONS_DIR: services/{{.SERVICE}}/migrations
+      ENV_FILE: services/{{.SERVICE}}/.env
+    cmds:
+      - goose -env "{{.ENV_FILE}}" -dir "{{.MIGRATIONS_DIR}}" down
+
+  migrate:down:all:
+    desc: Откатить все миграции сервиса
+    deps:
+      - migrate:check-env
+    requires:
+      vars: [SERVICE]
+    vars:
+      MIGRATIONS_DIR: services/{{.SERVICE}}/migrations
+      ENV_FILE: services/{{.SERVICE}}/.env
+    prompt: "Откатить все миграции выбранного сервиса?"
+    cmds:
+      - goose -env "{{.ENV_FILE}}" -dir "{{.MIGRATIONS_DIR}}" reset
+
+  migrate:status:
+    desc: Показать статус миграций сервиса
+    deps:
+      - migrate:check-env
+    requires:
+      vars: [SERVICE]
+    vars:
+      MIGRATIONS_DIR: services/{{.SERVICE}}/migrations
+      ENV_FILE: services/{{.SERVICE}}/.env
+    cmds:
+      - goose -env "{{.ENV_FILE}}" -dir "{{.MIGRATIONS_DIR}}" status
+
+  migrate:version:
+    desc: Показать текущую версию миграций
+    deps:
+      - migrate:check-env
+    requires:
+      vars: [SERVICE]
+    vars:
+      MIGRATIONS_DIR: services/{{.SERVICE}}/migrations
+      ENV_FILE: services/{{.SERVICE}}/.env
+    cmds:
+      - goose -env "{{.ENV_FILE}}" -dir "{{.MIGRATIONS_DIR}}" version
+
+  migrate:redo:
+    desc: Откатить последнюю миграцию и применить её повторно
+    deps:
+      - migrate:check-env
+    requires:
+      vars: [SERVICE]
+    vars:
+      MIGRATIONS_DIR: services/{{.SERVICE}}/migrations
+      ENV_FILE: services/{{.SERVICE}}/.env
+    cmds:
+      - goose -env "{{.ENV_FILE}}" -dir "{{.MIGRATIONS_DIR}}" redo

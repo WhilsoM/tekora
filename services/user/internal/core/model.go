@@ -14,3 +14,8 @@ type CreateUserPayload struct {
 	FullName    string
 	PhoneNumber string
 }
+
+type LoginUserPayload struct {
+	FullName    string
+	PhoneNumber string
+}
