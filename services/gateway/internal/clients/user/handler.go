@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"log/slog"
 	"net/http"
+	"strconv"
 	userpb "tekora/pkg/gen/user"
 	"tekora/services/gateway/internal/httpjson"
 	"time"
@@ -12,15 +13,15 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
-type UserHandler struct {
+type UserClient struct {
 	client userpb.UserServiceClient
 }
 
-func NewUserHandler(client userpb.UserServiceClient) *UserHandler {
-	return &UserHandler{client: client}
+func NewUserClient(client userpb.UserServiceClient) *UserClient {
+	return &UserClient{client: client}
 }
 
-func (h *UserHandler) InitUserHandlers(r chi.Router) {
+func (h *UserClient) InitUserHandlers(r chi.Router) {
 	r.Route("/users", func(r chi.Router) {
 		r.Post("/", h.RegisterUser)
 		r.Get("/me", h.GetUserByID)
@@ -28,7 +29,7 @@ func (h *UserHandler) InitUserHandlers(r chi.Router) {
 	})
 }
 
-func (h *UserHandler) RegisterUser(
+func (h *UserClient) RegisterUser(
 	w http.ResponseWriter,
 	r *http.Request,
 ) {
@@ -73,12 +74,22 @@ func (h *UserHandler) RegisterUser(
 	}
 }
 
-func (h *UserHandler) GetUserByID(
+func (h *UserClient) GetUserByID(
 	w http.ResponseWriter,
 	r *http.Request,
 ) {
+	idStr := r.URL.Query().Get("id")
+
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		slog.Error("failed to convert id to number", "error", err)
+
+		httpjson.WriteJSONError(w, http.StatusBadRequest, "get_user_bad_request", "invalid request")
+		return
+	}
+
 	userRes, err := h.client.GetUserByID(r.Context(), &userpb.GetUserByIDRequest{
-		Id: 1,
+		Id: uint32(id),
 	})
 	if err != nil {
 		slog.Error("failed to get user", "error", err)
