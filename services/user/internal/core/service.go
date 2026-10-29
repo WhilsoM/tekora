@@ -6,10 +6,10 @@ import (
 )
 
 type userRepository interface {
-	CreateUser(ctx context.Context, payload CreateUserPayload) (User, error)
-	GetUserByID(ctx context.Context, id uint32) (User, error)
-	UpdateUserByID(ctx context.Context) (User, error)
-	DeleteUser(ctx context.Context) (User, error)
+	CreateUser(context.Context, CreateUserPayload) (User, error)
+	GetUserByID(context.Context, uint32) (User, error)
+	UpdateUserByID(context.Context) (User, error)
+	DeleteUser(context.Context) (User, error)
 }
 
 type userService struct {
@@ -35,8 +35,8 @@ func (s *userService) GetUserByID(ctx context.Context, id uint32) (User, error) 
 	return user, nil
 }
 
-func (s *userService) UpdateUserByID(ctx context.Context) (User, error) {
-	return User{}, nil
+func (s *userService) UpdateUserByID(ctx context.Context, id uint32, updates map[string]any) (User, error) {
+	return s.UpdateUserByID(ctx, id, updates)
 }
 
 func (s *userService) DeleteUser(ctx context.Context) (User, error) {

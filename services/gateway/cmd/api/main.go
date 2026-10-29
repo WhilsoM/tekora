@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"os"
 	userpb "tekora/pkg/gen/user"
-	userhandler "tekora/services/gateway/internal/clients/user"
+	"tekora/services/gateway/internal/clients/user"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -21,18 +21,16 @@ func main() {
 
 	conn, err := grpc.NewClient(
 		addr,
-		grpc.WithTransportCredentials(
-			insecure.NewCredentials(),
-		),
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	)
 	if err != nil {
-		log.Fatal("failed to create grpc client: ", err)
+		log.Fatal("failed to create user grpc connection: ", err)
 	}
 	defer conn.Close()
 
-	userClient := userpb.NewUserServiceClient(conn)
+	userServiceClient := userpb.NewUserServiceClient(conn)
 
-	userHandler := userhandler.NewUserHandler(userClient)
+	userHandler := user.NewUserClient(userServiceClient)
 
 	router := chi.NewRouter()
 
