@@ -25,7 +25,7 @@ func (h *UserClient) InitUserHandlers(r chi.Router) {
 	r.Route("/users", func(r chi.Router) {
 		r.Post("/", h.RegisterUser)
 		r.Get("/me", h.GetUserByID)
-
+		r.Patch("/me", h.UpdateUserByID)
 	})
 }
 
@@ -104,6 +104,60 @@ func (h *UserClient) GetUserByID(
 		FullName:    userRes.GetFullName(),
 		Address:     userRes.GetAddress(),
 		CreatedAt:   userRes.GetCreatedAt().AsTime(),
+	}
+
+	if err := httpjson.MyJSONResponse(w, http.StatusOK, res); err != nil {
+		slog.Error("failed to encode response", "error", err)
+	}
+}
+
+// TODO: Id gets from middleware, context.withValue
+func (h *UserClient) UpdateUserByID(
+	w http.ResponseWriter,
+	r *http.Request,
+) {
+	var req UpdateUserByIDRequest
+
+	if !httpjson.MyJSONDecode(w, r, &req) {
+		return
+	}
+
+	if req.PhoneNumber == nil &&
+		req.FullName == nil &&
+		req.Address == nil {
+		httpjson.WriteJSONError(
+			w,
+			http.StatusBadRequest,
+			"empty_update",
+			"at least one field must be provided",
+		)
+		return
+	}
+	// TODO: change id to actual
+	userProto := &userpb.UpdateUserByIDRequest{
+		Id:          1,
+		PhoneNumber: req.PhoneNumber,
+		FullName:    req.FullName,
+		Address:     req.Address,
+	}
+
+	ctx, cancel := context.WithTimeout(r.Context(), 3*time.Second)
+	defer cancel()
+
+	updatedUser, err := h.client.UpdateUserByID(ctx, userProto)
+	if err != nil {
+		slog.Error("failed to register user", "error", err)
+
+		httpjson.WriteJSONError(w, http.StatusBadGateway, "register_user_service_unavailable", "service is unavailable")
+		return
+	}
+
+	res := UpdateUserByIDResponse{
+		ID:          updatedUser.GetId(),
+		PhoneNumber: updatedUser.GetPhoneNumber(),
+		FullName:    updatedUser.GetFullName(),
+		Address:     updatedUser.GetAddress(),
+		CreatedAt:   updatedUser.GetCreatedAt().AsTime(),
 	}
 
 	if err := httpjson.MyJSONResponse(w, http.StatusOK, res); err != nil {

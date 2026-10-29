@@ -8,7 +8,7 @@ import (
 type userRepository interface {
 	CreateUser(context.Context, CreateUserPayload) (User, error)
 	GetUserByID(context.Context, uint32) (User, error)
-	UpdateUserByID(context.Context) (User, error)
+	UpdateUserByID(context.Context, uint32, map[string]any) (User, error)
 	DeleteUser(context.Context) (User, error)
 }
 
@@ -36,7 +36,7 @@ func (s *userService) GetUserByID(ctx context.Context, id uint32) (User, error) 
 }
 
 func (s *userService) UpdateUserByID(ctx context.Context, id uint32, updates map[string]any) (User, error) {
-	return s.UpdateUserByID(ctx, id, updates)
+	return s.repo.UpdateUserByID(ctx, id, updates)
 }
 
 func (s *userService) DeleteUser(ctx context.Context) (User, error) {

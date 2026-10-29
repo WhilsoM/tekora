@@ -3,7 +3,6 @@ package transport
 import (
 	"context"
 	"errors"
-	"fmt"
 	"log/slog"
 	userpb "tekora/pkg/gen/user"
 	"tekora/services/user/internal/core"

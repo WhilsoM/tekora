@@ -67,7 +67,7 @@ func (repo *userRepository) GetUserByID(ctx context.Context, id uint32) (core.Us
 	}, nil
 }
 
-func (repo *userRepository) UpdateUserByID(ctx context.Context, id uint32, updates map[string]interface{}) (core.User, error) {
+func (repo *userRepository) UpdateUserByID(ctx context.Context, id uint32, updates map[string]any) (core.User, error) {
 	var user User
 
 	result := repo.db.WithContext(ctx).
