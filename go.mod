@@ -5,6 +5,7 @@ go 1.26.2
 require (
 	github.com/caarlos0/env/v11 v11.4.1
 	github.com/go-chi/chi/v5 v5.4.0
+	github.com/golang-jwt/jwt/v5 v5.3.1
 	github.com/joho/godotenv v1.5.1
 	google.golang.org/grpc v1.84.0
 	google.golang.org/protobuf v1.36.12

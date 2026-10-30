@@ -1,11 +1,13 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"os"
 	userpb "tekora/pkg/gen/user"
 	"tekora/services/gateway/internal/clients/user"
+	"time"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -14,6 +16,12 @@ import (
 )
 
 func main() {
+	if err := run(); err != nil {
+		log.Fatal(err)
+	}
+}
+
+func run() error {
 	addr := os.Getenv("USER_GRPC_ADDR")
 	if addr == "" {
 		addr = "localhost:50051"
@@ -24,9 +32,13 @@ func main() {
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	)
 	if err != nil {
-		log.Fatal("failed to create user grpc connection: ", err)
+		return fmt.Errorf("failed to create user grpc connection: %w", err)
 	}
-	defer conn.Close()
+	defer func() {
+		if err := conn.Close(); err != nil {
+			log.Printf("failed to close gRPC connection: %v", err)
+		}
+	}()
 
 	userServiceClient := userpb.NewUserServiceClient(conn)
 
@@ -44,7 +56,18 @@ func main() {
 
 	log.Println("Gateway started on :8080")
 
-	if err := http.ListenAndServe(":8080", router); err != nil {
-		log.Fatal(err)
+	server := &http.Server{
+		Addr:              ":8080",
+		Handler:           router,
+		ReadHeaderTimeout: 5 * time.Second,
+		ReadTimeout:       15 * time.Second,
+		WriteTimeout:      30 * time.Second,
+		IdleTimeout:       60 * time.Second,
 	}
+
+	if err := server.ListenAndServe(); err != nil {
+		return err
+	}
+
+	return nil
 }

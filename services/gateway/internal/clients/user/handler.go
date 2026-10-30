@@ -88,8 +88,16 @@ func (h *UserClient) GetUserByID(
 		return
 	}
 
+	if id <= 0 || uint64(id) > uint64(^uint32(0)) {
+		slog.Error("cannot convert id to uint", "error", err)
+
+		httpjson.WriteJSONError(w, http.StatusBadRequest, "get_user_bad_request", "invalid request")
+		return
+	}
+
+	userID := uint32(id)
 	userRes, err := h.client.GetUserByID(r.Context(), &userpb.GetUserByIDRequest{
-		Id: uint32(id),
+		Id: userID,
 	})
 	if err != nil {
 		slog.Error("failed to get user", "error", err)

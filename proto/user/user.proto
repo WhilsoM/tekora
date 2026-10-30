@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package user;
 
-option go_package = "tekora/pkg/gen;userpb";
+option go_package = "tekora/pkg/gen/user;userpb";
 
 import "google/protobuf/timestamp.proto";
 
