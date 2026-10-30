@@ -126,7 +126,7 @@ func decodeJSON(
 	}
 
 	target := reflect.ValueOf(dst)
-	if target.Kind() != reflect.Ptr || target.IsNil() {
+	if target.Kind() != reflect.Pointer || target.IsNil() {
 		return errInvalidDecodeTarget
 	}
 

@@ -16,11 +16,17 @@ import (
 )
 
 func main() {
+	if err := run(); err != nil {
+		log.Fatal(err)
+	}
+}
+
+func run() error {
 	cfg := config.MustConfig("services/user/.env")
 
 	listener, err := net.Listen("tcp", ":50051")
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
 	ctx, cancel := context.WithTimeout(
@@ -36,14 +42,18 @@ func main() {
 		ConnMaxIdleTime: cfg.ConnMaxIdleTime,
 	})
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
 	sqlDB, err := db.DB()
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
-	defer sqlDB.Close()
+	defer func() {
+		if err := sqlDB.Close(); err != nil {
+			log.Printf("failed to close db connection: %v", err)
+		}
+	}()
 
 	log.Println("PostgreSQL connected")
 
@@ -58,6 +68,8 @@ func main() {
 	log.Println("user grpc server started on :50051")
 
 	if err := grpcServer.Serve(listener); err != nil {
-		log.Fatal(err)
+		return err
 	}
+
+	return nil
 }

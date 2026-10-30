@@ -3,6 +3,7 @@ package postgres
 import (
 	"context"
 	"fmt"
+	"log"
 	"time"
 
 	postgresDriver "gorm.io/driver/postgres"
@@ -45,7 +46,11 @@ func Open(
 	defer cancel()
 
 	if err := sqlDB.PingContext(pingCtx); err != nil {
-		sqlDB.Close()
+		defer func() {
+			if err := sqlDB.Close(); err != nil {
+				log.Printf("failed to close db connection: %v", err)
+			}
+		}()
 		return nil, fmt.Errorf("ping postgres: %w", err)
 	}
 
