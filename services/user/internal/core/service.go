@@ -9,7 +9,7 @@ type userRepository interface {
 	CreateUser(context.Context, CreateUserPayload) (User, error)
 	GetUserByID(context.Context, uint32) (User, error)
 	UpdateUserByID(context.Context, uint32, map[string]any) (User, error)
-	DeleteUser(context.Context) (User, error)
+	DeleteUser(context.Context, uint32) error
 }
 
 type userService struct {
@@ -39,6 +39,6 @@ func (s *userService) UpdateUserByID(ctx context.Context, id uint32, updates map
 	return s.repo.UpdateUserByID(ctx, id, updates)
 }
 
-func (s *userService) DeleteUser(ctx context.Context) (User, error) {
-	return User{}, nil
+func (s *userService) DeleteUser(ctx context.Context, id uint32) error {
+	return s.repo.DeleteUser(ctx, id)
 }

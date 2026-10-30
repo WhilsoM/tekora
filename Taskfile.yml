@@ -25,6 +25,10 @@ tasks:
     desc: Run api-gateway service
     cmds:
       - go run ./services/gateway/cmd/api/main.go
+  run:user:
+    desc: Run user service
+    cmds:
+      - go run ./services/user/cmd/api/main.go
 
   # --- Общие проверки ---
 

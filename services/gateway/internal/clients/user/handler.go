@@ -26,6 +26,7 @@ func (h *UserClient) InitUserHandlers(r chi.Router) {
 		r.Post("/", h.RegisterUser)
 		r.Get("/me", h.GetUserByID)
 		r.Patch("/me", h.UpdateUserByID)
+		r.Delete("/me", h.DeleteUserByID)
 	})
 }
 
@@ -74,6 +75,7 @@ func (h *UserClient) RegisterUser(
 	}
 }
 
+// TODO: take user id from context, not from query param
 func (h *UserClient) GetUserByID(
 	w http.ResponseWriter,
 	r *http.Request,
@@ -169,6 +171,31 @@ func (h *UserClient) UpdateUserByID(
 	}
 
 	if err := httpjson.MyJSONResponse(w, http.StatusOK, res); err != nil {
+		slog.Error("failed to encode response", "error", err)
+	}
+}
+
+func (h *UserClient) DeleteUserByID(
+	w http.ResponseWriter,
+	r *http.Request,
+) {
+
+	userProto := &userpb.DeleteUserRequest{
+		Id: 1,
+	}
+
+	ctx, cancel := context.WithTimeout(r.Context(), 3*time.Second)
+	defer cancel()
+
+	_, err := h.client.DeleteUser(ctx, userProto)
+	if err != nil {
+		slog.Error("failed to delete user", "error", err)
+
+		httpjson.WriteJSONError(w, http.StatusBadGateway, "register_user_service_unavailable", "failed to delete user")
+		return
+	}
+
+	if err := httpjson.MyJSONResponse(w, http.StatusNoContent, nil); err != nil {
 		slog.Error("failed to encode response", "error", err)
 	}
 }
