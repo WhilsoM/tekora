@@ -3,11 +3,15 @@ package user
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"log/slog"
 	"net/http"
+	"os"
 	"strconv"
 	userpb "tekora/pkg/gen/user"
 	"tekora/services/gateway/internal/httpjson"
+	"tekora/services/gateway/internal/myjwt"
+	"tekora/services/gateway/internal/mymiddlewares"
 	"time"
 
 	"github.com/go-chi/chi/v5"
@@ -24,9 +28,14 @@ func NewUserClient(client userpb.UserServiceClient) *UserClient {
 func (h *UserClient) InitUserHandlers(r chi.Router) {
 	r.Route("/users", func(r chi.Router) {
 		r.Post("/", h.RegisterUser)
-		r.Get("/me", h.GetUserByID)
-		r.Patch("/me", h.UpdateUserByID)
-		r.Delete("/me", h.DeleteUserByID)
+
+		r.Group(func(r chi.Router) {
+			r.Use(mymiddlewares.AuthMiddleware)
+
+			r.Get("/me", h.GetUserByID)
+			r.Patch("/me", h.UpdateUserByID)
+			r.Delete("/me", h.DeleteUserByID)
+		})
 	})
 }
 
@@ -63,11 +72,27 @@ func (h *UserClient) RegisterUser(
 		return
 	}
 
+	accessToken, err := myjwt.CreateToken(
+		strconv.FormatUint(uint64(registeredUser.GetId()), 10),
+	)
+	if err != nil {
+		slog.Error("failed to create access token", "error", err)
+
+		httpjson.WriteJSONError(
+			w,
+			http.StatusInternalServerError,
+			"token_creation_failed",
+			"failed to create access token",
+		)
+		return
+	}
+
 	res := RegisterUserResponse{
 		ID:          registeredUser.GetId(),
 		PhoneNumber: registeredUser.GetPhoneNumber(),
 		FullName:    registeredUser.GetFullName(),
 		CreatedAt:   registeredUser.GetCreatedAt().AsTime(),
+		AccessToken: accessToken,
 	}
 
 	if err := httpjson.MyJSONResponse(w, http.StatusCreated, res); err != nil {
@@ -75,12 +100,24 @@ func (h *UserClient) RegisterUser(
 	}
 }
 
-// TODO: take user id from context, not from query param
 func (h *UserClient) GetUserByID(
 	w http.ResponseWriter,
 	r *http.Request,
 ) {
-	idStr := r.URL.Query().Get("id")
+	idStr, ok := mymiddlewares.UserIDFromContext(r.Context())
+	if !ok {
+		slog.Error("failed to get id from context", "id_str", idStr, "ok", ok)
+
+		httpjson.WriteJSONError(w, http.StatusInternalServerError, "get_user_bad_request", "internal server error")
+		return
+	}
+	slog.Info("id", idStr)
+
+	fmt.Println("HELLO STDOUT")
+
+	fmt.Fprintln(os.Stderr, "HELLO STDERR")
+
+	slog.Info("HELLO SLOG")
 
 	id, err := strconv.Atoi(idStr)
 	if err != nil {

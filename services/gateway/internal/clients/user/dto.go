@@ -12,6 +12,7 @@ type RegisterUserResponse struct {
 	PhoneNumber string    `json:"phone_number"`
 	FullName    string    `json:"full_name"`
 	CreatedAt   time.Time `json:"created_at"`
+	AccessToken string    `json:"access_token"`
 }
 
 type GetUserByIDResponse struct {
