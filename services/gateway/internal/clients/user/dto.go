@@ -8,11 +8,12 @@ type RegisterUserRequest struct {
 }
 
 type RegisterUserResponse struct {
-	ID          uint32    `json:"id"`
-	PhoneNumber string    `json:"phone_number"`
-	FullName    string    `json:"full_name"`
-	CreatedAt   time.Time `json:"created_at"`
-	AccessToken string    `json:"access_token"`
+	ID           uint32    `json:"id"`
+	PhoneNumber  string    `json:"phone_number"`
+	FullName     string    `json:"full_name"`
+	CreatedAt    time.Time `json:"created_at"`
+	AccessToken  string    `json:"access_token"`
+	RefreshToken string    `json:"refresh_token"`
 }
 
 type GetUserByIDResponse struct {
@@ -35,4 +36,12 @@ type UpdateUserByIDResponse struct {
 	FullName    string    `json:"full_name"`
 	Address     string    `json:"address"`
 	CreatedAt   time.Time `json:"created_at"`
+}
+
+type RefreshTokenRequest struct {
+	RefreshToken string `json:"refresh_token"`
+}
+
+type RefreshTokenResponse struct {
+	AccessToken string `json:"access_token"`
 }

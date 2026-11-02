@@ -25,7 +25,7 @@ func AuthMiddleware(next http.Handler) http.Handler {
 			return
 		}
 
-		userID, err := myjwt.VerifyToken(parts[1])
+		claims, err := myjwt.VerifyAccessToken(parts[1])
 		if err != nil {
 			http.Error(w, "unauthorized", http.StatusUnauthorized)
 			return
@@ -34,7 +34,7 @@ func AuthMiddleware(next http.Handler) http.Handler {
 		ctx := context.WithValue(
 			r.Context(),
 			userIDCtxKey,
-			userID,
+			claims.Subject,
 		)
 
 		next.ServeHTTP(w, r.WithContext(ctx))
