@@ -14,6 +14,8 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
+const userHandlerTimeout = 5 * time.Second
+
 type UserClient struct {
 	client userpb.UserServiceClient
 }
@@ -52,7 +54,7 @@ func (h *UserClient) RegisterUser(
 		FullName:    req.FullName,
 	}
 
-	ctx, cancel := context.WithTimeout(r.Context(), 3*time.Second)
+	ctx, cancel := context.WithTimeout(r.Context(), userHandlerTimeout)
 	defer cancel()
 
 	registeredUser, err := h.client.RegisterUser(ctx, userProto)
@@ -117,7 +119,10 @@ func (h *UserClient) GetUserByID(
 		return
 	}
 
-	userRes, err := h.client.GetUserByID(r.Context(), &userpb.GetUserByIDRequest{
+	ctx, cancel := context.WithTimeout(r.Context(), userHandlerTimeout)
+	defer cancel()
+
+	userRes, err := h.client.GetUserByID(ctx, &userpb.GetUserByIDRequest{
 		Id: uint32(userID),
 	})
 	if err != nil {
@@ -185,7 +190,7 @@ func (h *UserClient) UpdateUserByID(
 		Address:     req.Address,
 	}
 
-	ctx, cancel := context.WithTimeout(r.Context(), 3*time.Second)
+	ctx, cancel := context.WithTimeout(r.Context(), userHandlerTimeout)
 	defer cancel()
 
 	updatedUser, err := h.client.UpdateUserByID(ctx, userProto)
@@ -229,7 +234,7 @@ func (h *UserClient) DeleteUserByID(
 		return
 	}
 
-	ctx, cancel := context.WithTimeout(r.Context(), 3*time.Second)
+	ctx, cancel := context.WithTimeout(r.Context(), userHandlerTimeout)
 	defer cancel()
 
 	_, err = h.client.DeleteUser(ctx, &userpb.DeleteUserRequest{
