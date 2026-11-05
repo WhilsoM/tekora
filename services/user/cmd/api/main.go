@@ -24,7 +24,7 @@ func main() {
 func run() error {
 	cfg := config.MustConfig("services/user/.env")
 
-	listener, err := net.Listen("tcp", ":50051")
+	listener, err := net.Listen("tcp", ":50051") // #nosec G102 -- intentionally accessible through private Docker network
 	if err != nil {
 		return err
 	}

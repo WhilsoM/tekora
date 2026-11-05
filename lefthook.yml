@@ -1,0 +1,14 @@
+pre-commit:
+  parallel: false
+
+  commands:
+    gofmt:
+      glob: "*.go"
+      run: gofmt -w {staged_files}
+      stage_fixed: true
+
+    tests:
+      run: go test ./...
+
+    lint:
+      run: golangci-lint run ./...
