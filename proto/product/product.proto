@@ -1,0 +1,80 @@
+syntax = "proto3";
+
+package product;
+
+option go_package = "tekora/pkg/gen/product;productpb";
+
+import "google/protobuf/timestamp.proto";
+
+service ProductService {
+    rpc GetProducts(GetProductsRequest) returns (GetProductsResponse);
+    rpc GetProductByID(GetProductByIDRequest) returns (GetProductByIDResponse);
+    rpc DeleteProductByID(DeleteProductByIDRequest) returns (DeleteProductByIDResponse);
+    rpc CreateProduct(CreateProductRequest) returns (CreateProductResponse);
+    rpc UpdateProductByID(UpdateProductByIDRequest) returns (UpdateProductByIDResponse);
+}
+
+message ProductItem {
+    uint32 id = 1;
+    string name = 2;
+    uint32 price = 3;
+    string category = 4;
+    uint32 stock = 5;
+    google.protobuf.Timestamp created_at = 6;
+    google.protobuf.Timestamp updated_at = 7;
+}
+
+message ProductItemShort {
+    uint32 id = 1;
+    string name = 2;
+    uint32 price = 3;
+}
+
+message GetProductsRequest {
+    uint32 limit = 1;
+    uint32 offset = 2;
+}
+
+message GetProductsResponse {
+    repeated ProductItemShort items = 1;
+}
+
+message GetProductByIDRequest {
+    uint32 id = 1;
+}
+
+message GetProductByIDResponse {
+    ProductItem item = 1;
+}
+
+message DeleteProductByIDRequest {
+    uint32 id = 1;
+}
+
+message DeleteProductByIDResponse {
+    string message = 1;
+    bool is_success = 2;
+}
+
+message CreateProductRequest {
+    string name = 1;
+    uint32 price = 2;
+    string category = 3;
+    uint32 stock = 4;
+}
+
+message CreateProductResponse {
+    ProductItem item = 1;
+}
+
+message UpdateProductByIDRequest {
+    uint32 id = 1;
+    optional string name = 2;
+    optional uint32 price = 3;
+    optional string category = 4;
+    optional uint32 stock = 5;
+}
+
+message UpdateProductByIDResponse {
+    ProductItem item = 1;
+}
