@@ -29,6 +29,10 @@ tasks:
     desc: Run user service
     cmds:
       - go run ./services/user/cmd/api/main.go
+  run:product:
+    desc: Run product service
+    cmds:
+      - go run ./services/product/cmd/api/main.go
 
   # --- Общие проверки ---
 

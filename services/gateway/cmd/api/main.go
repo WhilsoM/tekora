@@ -5,7 +5,9 @@ import (
 	"log"
 	"net/http"
 	"os"
+	productpb "tekora/pkg/gen/product"
 	userpb "tekora/pkg/gen/user"
+	"tekora/services/gateway/internal/clients/product"
 	"tekora/services/gateway/internal/clients/user"
 	"time"
 
@@ -44,6 +46,28 @@ func run() error {
 
 	userHandler := user.NewUserClient(userServiceClient)
 
+	productAddr := os.Getenv("PRODUCT_GRPC_ADDR")
+	if productAddr == "" {
+		productAddr = "localhost:50052"
+	}
+
+	productConn, err := grpc.NewClient(
+		productAddr,
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+	)
+	if err != nil {
+		return fmt.Errorf("failed to create product grpc connection: %w", err)
+	}
+	defer func() {
+		if err := productConn.Close(); err != nil {
+			log.Printf("failed to close gRPC connection: %v", err)
+		}
+	}()
+
+	productServiceClient := productpb.NewProductServiceClient(productConn)
+
+	productHandler := product.NewProductClient(productServiceClient)
+
 	router := chi.NewRouter()
 
 	router.Use(middleware.RequestID)
@@ -52,6 +76,7 @@ func run() error {
 
 	router.Route("/api", func(r chi.Router) {
 		userHandler.InitUserHandlers(r)
+		productHandler.InitProductHandlers(r)
 	})
 
 	log.Println("Gateway started on :8080")
