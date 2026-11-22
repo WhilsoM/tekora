@@ -17,5 +17,37 @@ services:
       retries: 10
       start_period: 10s
 
+  product:
+    build:
+      context: .
+      dockerfile: services/product/Dockerfile
+    env_file:
+      - ./services/product/.env
+    depends_on:
+      db:
+        condition: service_healthy
+
+  user:
+    build:
+      context: .
+      dockerfile: services/user/Dockerfile
+    env_file:
+      - ./services/user/.env
+    depends_on:
+      db:
+        condition: service_healthy
+
+  gateway:
+    build:
+      context: .
+      dockerfile: services/gateway/Dockerfile
+    env_file:
+      - ./services/gateway/.env
+    ports:
+      - "8080:8080"
+    depends_on:
+      - product
+      - user
+
 volumes:
   postgres_data:

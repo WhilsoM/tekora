@@ -364,10 +364,10 @@ func (h *ProductClient) UpdateProductByID(
 
 	response, err := h.client.UpdateProductByID(ctx, &productpb.UpdateProductByIDRequest{
 		Id:       id,
-		Name:     &req.Name,
-		Price:    &req.Price,
-		Category: &req.Category,
-		Stock:    &req.Stock,
+		Name:     req.Name,
+		Price:    req.Price,
+		Category: req.Category,
+		Stock:    req.Stock,
 	})
 
 	if err != nil {

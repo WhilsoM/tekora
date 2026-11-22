@@ -61,9 +61,13 @@ func (db *productRepository) GetProductByID(ctx context.Context, id uint32) (cor
 
 func (db *productRepository) DeleteProductByID(ctx context.Context, id uint32) error {
 	var product ProductItem
-	err := db.gorm.WithContext(ctx).Where("id = ?", id).Delete(&product).Error
-	if err != nil {
-		return fmt.Errorf("delete product by id: %w", err)
+	res := db.gorm.WithContext(ctx).Where("id = ?", id).Delete(&product)
+	if res.Error != nil {
+		return fmt.Errorf("delete product by id: %w", res.Error)
+	}
+
+	if res.RowsAffected == 0 {
+		return core.ErrNotFoundProduct
 	}
 
 	return nil
@@ -104,7 +108,7 @@ func (db *productRepository) UpdateProductByID(ctx context.Context, id uint32, u
 		return core.ProductItem{}, fmt.Errorf("failed to update product: %w", result.Error)
 	}
 	if result.RowsAffected == 0 {
-		return core.ProductItem{}, errors.New("not found a product")
+		return core.ProductItem{}, core.ErrNotFoundProduct
 	}
 
 	return core.ProductItem{

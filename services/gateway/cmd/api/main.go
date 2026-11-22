@@ -26,7 +26,7 @@ func main() {
 func run() error {
 	addr := os.Getenv("USER_GRPC_ADDR")
 	if addr == "" {
-		addr = "localhost:50051"
+		addr = "user:50051"
 	}
 
 	conn, err := grpc.NewClient(
@@ -48,7 +48,7 @@ func run() error {
 
 	productAddr := os.Getenv("PRODUCT_GRPC_ADDR")
 	if productAddr == "" {
-		productAddr = "localhost:50052"
+		productAddr = "product:50052"
 	}
 
 	productConn, err := grpc.NewClient(
