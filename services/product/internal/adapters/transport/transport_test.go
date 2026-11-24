@@ -10,10 +10,6 @@ import (
 	"tekora/services/product/internal/core"
 )
 
-// ============================================================
-// 1. FAKE SERVICE
-// ============================================================
-
 type productServiceStub struct {
 	getProductsFn    func(context.Context) ([]core.ProductItemShort, error)
 	getProductByIDFn func(context.Context, uint32) (core.ProductItem, error)
@@ -56,10 +52,6 @@ func (s *productServiceStub) UpdateProductByID(ctx context.Context, id uint32, u
 	}
 	return s.updateProductFn(ctx, id, updates)
 }
-
-// ============================================================
-// 2. TEST HELPERS
-// ============================================================
 
 func testProduct() core.ProductItem {
 	return core.ProductItem{
@@ -109,12 +101,7 @@ func assertProduct(t *testing.T, got *productpb.ProductItem, want core.ProductIt
 	}
 }
 
-// ============================================================
-// 3. GET PRODUCTS
-// ============================================================
-
 func TestProductServer_GetProducts(t *testing.T) {
-	// Arrange
 
 	expectedProducts := []core.ProductItemShort{
 		{ID: 1, Name: "Keyboard", Price: 99},
@@ -131,11 +118,7 @@ func TestProductServer_GetProducts(t *testing.T) {
 
 	req := &productpb.GetProductsRequest{}
 
-	// Act
-
 	got, err := server.GetProducts(context.Background(), req)
-
-	// Assert
 
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
@@ -167,7 +150,6 @@ func TestProductServer_GetProducts(t *testing.T) {
 }
 
 func TestProductServer_GetProducts_ServiceError(t *testing.T) {
-	// Arrange
 
 	serviceErr := errors.New("database unavailable")
 
@@ -179,11 +161,7 @@ func TestProductServer_GetProducts_ServiceError(t *testing.T) {
 
 	server := NewProductServer(fakeService)
 
-	// Act
-
 	got, err := server.GetProducts(context.Background(), &productpb.GetProductsRequest{})
-
-	// Assert
 
 	if !errors.Is(err, serviceErr) {
 		t.Fatalf("expected service error, got %v", err)
@@ -194,12 +172,7 @@ func TestProductServer_GetProducts_ServiceError(t *testing.T) {
 	}
 }
 
-// ============================================================
-// 4. GET PRODUCT BY ID
-// ============================================================
-
 func TestProductServer_GetProductByID(t *testing.T) {
-	// Arrange
 
 	expectedProduct := testProduct()
 
@@ -218,11 +191,7 @@ func TestProductServer_GetProductByID(t *testing.T) {
 		Id: 42,
 	}
 
-	// Act
-
 	got, err := server.GetProductByID(context.Background(), req)
-
-	// Assert
 
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
@@ -240,7 +209,6 @@ func TestProductServer_GetProductByID(t *testing.T) {
 }
 
 func TestProductServer_GetProductByID_ServiceError(t *testing.T) {
-	// Arrange
 
 	serviceErr := errors.New("product not found")
 
@@ -252,14 +220,10 @@ func TestProductServer_GetProductByID_ServiceError(t *testing.T) {
 
 	server := NewProductServer(fakeService)
 
-	// Act
-
 	got, err := server.GetProductByID(
 		context.Background(),
 		&productpb.GetProductByIDRequest{Id: 42},
 	)
-
-	// Assert
 
 	if !errors.Is(err, serviceErr) {
 		t.Fatalf("expected service error, got %v", err)
@@ -270,12 +234,7 @@ func TestProductServer_GetProductByID_ServiceError(t *testing.T) {
 	}
 }
 
-// ============================================================
-// 5. DELETE PRODUCT BY ID
-// ============================================================
-
 func TestProductServer_DeleteProductByID(t *testing.T) {
-	// Arrange
 
 	var receivedID uint32
 
@@ -292,11 +251,7 @@ func TestProductServer_DeleteProductByID(t *testing.T) {
 		Id: 42,
 	}
 
-	// Act
-
 	got, err := server.DeleteProductByID(context.Background(), req)
-
-	// Assert
 
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
@@ -320,7 +275,6 @@ func TestProductServer_DeleteProductByID(t *testing.T) {
 }
 
 func TestProductServer_DeleteProductByID_ServiceError(t *testing.T) {
-	// Arrange
 
 	serviceErr := errors.New("delete failed")
 
@@ -332,14 +286,10 @@ func TestProductServer_DeleteProductByID_ServiceError(t *testing.T) {
 
 	server := NewProductServer(fakeService)
 
-	// Act
-
 	got, err := server.DeleteProductByID(
 		context.Background(),
 		&productpb.DeleteProductByIDRequest{Id: 42},
 	)
-
-	// Assert
 
 	if !errors.Is(err, serviceErr) {
 		t.Fatalf("expected service error, got %v", err)
@@ -350,12 +300,7 @@ func TestProductServer_DeleteProductByID_ServiceError(t *testing.T) {
 	}
 }
 
-// ============================================================
-// 6. CREATE PRODUCT
-// ============================================================
-
 func TestProductServer_CreateProduct(t *testing.T) {
-	// Arrange
 
 	expectedProduct := testProduct()
 
@@ -377,17 +322,11 @@ func TestProductServer_CreateProduct(t *testing.T) {
 		Stock:    15,
 	}
 
-	// Act
-
 	got, err := server.CreateProduct(context.Background(), req)
-
-	// Assert
 
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
-
-	// Verify request -> core payload.
 
 	if receivedPayload.Name != req.Name {
 		t.Errorf("expected name %q, got %q", req.Name, receivedPayload.Name)
@@ -405,8 +344,6 @@ func TestProductServer_CreateProduct(t *testing.T) {
 		t.Errorf("expected stock %v, got %v", req.Stock, receivedPayload.Stock)
 	}
 
-	// Verify core product -> protobuf response.
-
 	if got == nil {
 		t.Fatal("expected response, got nil")
 	}
@@ -415,7 +352,6 @@ func TestProductServer_CreateProduct(t *testing.T) {
 }
 
 func TestProductServer_CreateProduct_ServiceError(t *testing.T) {
-	// Arrange
 
 	serviceErr := errors.New("create failed")
 
@@ -427,8 +363,6 @@ func TestProductServer_CreateProduct_ServiceError(t *testing.T) {
 
 	server := NewProductServer(fakeService)
 
-	// Act
-
 	got, err := server.CreateProduct(
 		context.Background(),
 		&productpb.CreateProductRequest{
@@ -439,8 +373,6 @@ func TestProductServer_CreateProduct_ServiceError(t *testing.T) {
 		},
 	)
 
-	// Assert
-
 	if !errors.Is(err, serviceErr) {
 		t.Fatalf("expected service error, got %v", err)
 	}
@@ -450,12 +382,7 @@ func TestProductServer_CreateProduct_ServiceError(t *testing.T) {
 	}
 }
 
-// ============================================================
-// 7. UPDATE PRODUCT BY ID
-// ============================================================
-
 func TestProductServer_UpdateProductByID(t *testing.T) {
-	// Arrange
 
 	expectedProduct := testProduct()
 
@@ -485,23 +412,15 @@ func TestProductServer_UpdateProductByID(t *testing.T) {
 		Stock:    &stock,
 	}
 
-	// Act
-
 	got, err := server.UpdateProductByID(context.Background(), req)
-
-	// Assert
 
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
 
-	// Verify ID.
-
 	if receivedID != req.Id {
 		t.Errorf("expected ID %d, got %d", req.Id, receivedID)
 	}
-
-	// Verify updates map.
 
 	if len(receivedUpdates) != 4 {
 		t.Fatalf("expected 4 updates, got %d", len(receivedUpdates))
@@ -523,8 +442,6 @@ func TestProductServer_UpdateProductByID(t *testing.T) {
 		t.Errorf("unexpected Stock update: %v", receivedUpdates["Stock"])
 	}
 
-	// Verify response.
-
 	if got == nil {
 		t.Fatal("expected response, got nil")
 	}
@@ -533,10 +450,6 @@ func TestProductServer_UpdateProductByID(t *testing.T) {
 }
 
 func TestProductServer_UpdateProductByID_NoUpdates(t *testing.T) {
-	// Arrange
-
-	// No update function is configured.
-	// If the handler calls the service, the fake will panic.
 
 	server := NewProductServer(&productServiceStub{})
 
@@ -544,11 +457,7 @@ func TestProductServer_UpdateProductByID_NoUpdates(t *testing.T) {
 		Id: 42,
 	}
 
-	// Act
-
 	got, err := server.UpdateProductByID(context.Background(), req)
-
-	// Assert
 
 	if err == nil {
 		t.Fatal("expected error when no updates are provided")
@@ -564,7 +473,6 @@ func TestProductServer_UpdateProductByID_NoUpdates(t *testing.T) {
 }
 
 func TestProductServer_UpdateProductByID_ServiceError(t *testing.T) {
-	// Arrange
 
 	serviceErr := errors.New("update failed")
 
@@ -583,11 +491,7 @@ func TestProductServer_UpdateProductByID_ServiceError(t *testing.T) {
 		Name: &name,
 	}
 
-	// Act
-
 	got, err := server.UpdateProductByID(context.Background(), req)
-
-	// Assert
 
 	if !errors.Is(err, serviceErr) {
 		t.Fatalf("expected service error, got %v", err)
