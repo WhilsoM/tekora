@@ -22,7 +22,8 @@ func createRefreshToken(userID string) (string, error) {
 		Claims{
 			Type: "refresh",
 			RegisteredClaims: jwt.RegisteredClaims{
-				Subject:   userID,
+				Subject: userID,
+				// todo: put into config or const  7 * 24 * time.Hour
 				ExpiresAt: jwt.NewNumericDate(time.Now().Add(7 * 24 * time.Hour)),
 				IssuedAt:  jwt.NewNumericDate(time.Now()),
 				ID:        rand.Text(),
@@ -44,7 +45,8 @@ func CreateAccessToken(userID string) (string, error) {
 		Claims{
 			Type: "access",
 			RegisteredClaims: jwt.RegisteredClaims{
-				Subject:   userID,
+				Subject: userID,
+				// todo: put into config or const  7 * 24 * time.Hour
 				ExpiresAt: jwt.NewNumericDate(time.Now().Add(15 * time.Minute)),
 				IssuedAt:  jwt.NewNumericDate(time.Now()),
 				ID:        rand.Text(),

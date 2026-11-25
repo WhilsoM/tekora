@@ -19,10 +19,10 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	OrderService_CreateOrder_FullMethodName     = "/OrderService/CreateOrder"
-	OrderService_GetOrderByID_FullMethodName    = "/OrderService/GetOrderByID"
-	OrderService_DeleteOrderByID_FullMethodName = "/OrderService/DeleteOrderByID"
-	OrderService_UpdateOrderByID_FullMethodName = "/OrderService/UpdateOrderByID"
+	OrderService_CreateOrder_FullMethodName     = "/order.OrderService/CreateOrder"
+	OrderService_GetOrderByID_FullMethodName    = "/order.OrderService/GetOrderByID"
+	OrderService_DeleteOrderByID_FullMethodName = "/order.OrderService/DeleteOrderByID"
+	OrderService_UpdateOrderByID_FullMethodName = "/order.OrderService/UpdateOrderByID"
 )
 
 // OrderServiceClient is the client API for OrderService service.
@@ -210,7 +210,7 @@ func _OrderService_UpdateOrderByID_Handler(srv interface{}, ctx context.Context,
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var OrderService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "OrderService",
+	ServiceName: "order.OrderService",
 	HandlerType: (*OrderServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{

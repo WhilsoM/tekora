@@ -1,5 +1,7 @@
 syntax = "proto3";
 
+package order;
+
 option go_package = "tekora/pkg/gen/order;orderpb";
 
 import "google/protobuf/timestamp.proto";
