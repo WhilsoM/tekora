@@ -12,13 +12,13 @@ func (GetProducts) TableName() string {
 }
 
 type ProductItemShort struct {
-	ID    uint32
+	ID    int64
 	Name  string
 	Price uint32
 }
 
 type ProductItem struct {
-	ID        uint32
+	ID        int64
 	Name      string
 	Price     uint32
 	Category  string

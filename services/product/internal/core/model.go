@@ -10,7 +10,7 @@ type CreateProductPayload struct {
 }
 
 type ProductItem struct {
-	ID        uint32
+	ID        int64
 	Name      string
 	Price     uint32
 	Category  string
@@ -20,7 +20,7 @@ type ProductItem struct {
 }
 
 type ProductItemShort struct {
-	ID    uint32
+	ID    int64
 	Name  string
 	Price uint32
 }

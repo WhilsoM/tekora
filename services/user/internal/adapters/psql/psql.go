@@ -42,7 +42,7 @@ func (repo *userRepository) CreateUser(ctx context.Context, payload core.CreateU
 	}, nil
 }
 
-func (repo *userRepository) GetUserByID(ctx context.Context, id uint32) (core.User, error) {
+func (repo *userRepository) GetUserByID(ctx context.Context, id int64) (core.User, error) {
 	var user User
 
 	err := repo.db.
@@ -67,7 +67,7 @@ func (repo *userRepository) GetUserByID(ctx context.Context, id uint32) (core.Us
 	}, nil
 }
 
-func (repo *userRepository) UpdateUserByID(ctx context.Context, id uint32, updates map[string]any) (core.User, error) {
+func (repo *userRepository) UpdateUserByID(ctx context.Context, id int64, updates map[string]any) (core.User, error) {
 	var user User
 
 	result := repo.db.WithContext(ctx).
@@ -93,7 +93,7 @@ func (repo *userRepository) UpdateUserByID(ctx context.Context, id uint32, updat
 	}, nil
 }
 
-func (repo *userRepository) DeleteUser(ctx context.Context, id uint32) (bool, error) {
+func (repo *userRepository) DeleteUser(ctx context.Context, id int64) (bool, error) {
 	result := repo.db.WithContext(ctx).Where("id = ?", id).Delete(&User{})
 
 	if result.Error != nil {

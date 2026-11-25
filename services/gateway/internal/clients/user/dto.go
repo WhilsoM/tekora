@@ -8,7 +8,7 @@ type RegisterUserRequest struct {
 }
 
 type RegisterUserResponse struct {
-	ID           uint32    `json:"id"`
+	ID           int64     `json:"id"`
 	PhoneNumber  string    `json:"phone_number"`
 	FullName     string    `json:"full_name"`
 	CreatedAt    time.Time `json:"created_at"`
@@ -17,7 +17,7 @@ type RegisterUserResponse struct {
 }
 
 type GetUserByIDResponse struct {
-	ID          uint32    `json:"id"`
+	ID          int64     `json:"id"`
 	PhoneNumber string    `json:"phone_number"`
 	FullName    string    `json:"full_name"`
 	Address     string    `json:"address"`
@@ -31,7 +31,7 @@ type UpdateUserByIDRequest struct {
 }
 
 type UpdateUserByIDResponse struct {
-	ID          uint32    `json:"id"`
+	ID          int64     `json:"id"`
 	PhoneNumber string    `json:"phone_number"`
 	FullName    string    `json:"full_name"`
 	Address     string    `json:"address"`

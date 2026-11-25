@@ -12,10 +12,10 @@ import (
 
 type productService interface {
 	GetProducts(ctx context.Context) ([]core.ProductItemShort, error)
-	GetProductByID(ctx context.Context, id uint32) (core.ProductItem, error)
-	DeleteProductByID(ctx context.Context, id uint32) error
+	GetProductByID(ctx context.Context, id int64) (core.ProductItem, error)
+	DeleteProductByID(ctx context.Context, id int64) error
 	CreateProduct(ctx context.Context, payload core.CreateProductPayload) (core.ProductItem, error)
-	UpdateProductByID(ctx context.Context, id uint32, updates map[string]any) (core.ProductItem, error)
+	UpdateProductByID(ctx context.Context, id int64, updates map[string]any) (core.ProductItem, error)
 }
 
 type productServer struct {

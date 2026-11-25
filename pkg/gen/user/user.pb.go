@@ -76,7 +76,7 @@ func (x *RegisterUserRequest) GetFullName() string {
 
 type RegisterUserResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            uint32                 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 	PhoneNumber   string                 `protobuf:"bytes,2,opt,name=phone_number,json=phoneNumber,proto3" json:"phone_number,omitempty"`
 	FullName      string                 `protobuf:"bytes,3,opt,name=full_name,json=fullName,proto3" json:"full_name,omitempty"`
 	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
@@ -114,7 +114,7 @@ func (*RegisterUserResponse) Descriptor() ([]byte, []int) {
 	return file_user_user_proto_rawDescGZIP(), []int{1}
 }
 
-func (x *RegisterUserResponse) GetId() uint32 {
+func (x *RegisterUserResponse) GetId() int64 {
 	if x != nil {
 		return x.Id
 	}
@@ -196,7 +196,7 @@ func (x *LoginUserRequest) GetFullName() string {
 
 type LoginUserResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            uint32                 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 	PhoneNumber   string                 `protobuf:"bytes,2,opt,name=phone_number,json=phoneNumber,proto3" json:"phone_number,omitempty"`
 	FullName      string                 `protobuf:"bytes,3,opt,name=full_name,json=fullName,proto3" json:"full_name,omitempty"`
 	Address       string                 `protobuf:"bytes,4,opt,name=address,proto3" json:"address,omitempty"`
@@ -235,7 +235,7 @@ func (*LoginUserResponse) Descriptor() ([]byte, []int) {
 	return file_user_user_proto_rawDescGZIP(), []int{3}
 }
 
-func (x *LoginUserResponse) GetId() uint32 {
+func (x *LoginUserResponse) GetId() int64 {
 	if x != nil {
 		return x.Id
 	}
@@ -272,7 +272,7 @@ func (x *LoginUserResponse) GetCreatedAt() *timestamppb.Timestamp {
 
 type GetUserByIDRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            uint32                 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -307,7 +307,7 @@ func (*GetUserByIDRequest) Descriptor() ([]byte, []int) {
 	return file_user_user_proto_rawDescGZIP(), []int{4}
 }
 
-func (x *GetUserByIDRequest) GetId() uint32 {
+func (x *GetUserByIDRequest) GetId() int64 {
 	if x != nil {
 		return x.Id
 	}
@@ -316,7 +316,7 @@ func (x *GetUserByIDRequest) GetId() uint32 {
 
 type GetUserByIDResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            uint32                 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 	PhoneNumber   string                 `protobuf:"bytes,2,opt,name=phone_number,json=phoneNumber,proto3" json:"phone_number,omitempty"`
 	FullName      string                 `protobuf:"bytes,3,opt,name=full_name,json=fullName,proto3" json:"full_name,omitempty"`
 	Address       string                 `protobuf:"bytes,4,opt,name=address,proto3" json:"address,omitempty"`
@@ -355,7 +355,7 @@ func (*GetUserByIDResponse) Descriptor() ([]byte, []int) {
 	return file_user_user_proto_rawDescGZIP(), []int{5}
 }
 
-func (x *GetUserByIDResponse) GetId() uint32 {
+func (x *GetUserByIDResponse) GetId() int64 {
 	if x != nil {
 		return x.Id
 	}
@@ -392,7 +392,7 @@ func (x *GetUserByIDResponse) GetCreatedAt() *timestamppb.Timestamp {
 
 type UpdateUserByIDRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            uint32                 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 	PhoneNumber   *string                `protobuf:"bytes,2,opt,name=phone_number,json=phoneNumber,proto3,oneof" json:"phone_number,omitempty"`
 	FullName      *string                `protobuf:"bytes,3,opt,name=full_name,json=fullName,proto3,oneof" json:"full_name,omitempty"`
 	Address       *string                `protobuf:"bytes,4,opt,name=address,proto3,oneof" json:"address,omitempty"`
@@ -430,7 +430,7 @@ func (*UpdateUserByIDRequest) Descriptor() ([]byte, []int) {
 	return file_user_user_proto_rawDescGZIP(), []int{6}
 }
 
-func (x *UpdateUserByIDRequest) GetId() uint32 {
+func (x *UpdateUserByIDRequest) GetId() int64 {
 	if x != nil {
 		return x.Id
 	}
@@ -460,7 +460,7 @@ func (x *UpdateUserByIDRequest) GetAddress() string {
 
 type UpdateUserByIDResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            uint32                 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 	PhoneNumber   string                 `protobuf:"bytes,2,opt,name=phone_number,json=phoneNumber,proto3" json:"phone_number,omitempty"`
 	FullName      string                 `protobuf:"bytes,3,opt,name=full_name,json=fullName,proto3" json:"full_name,omitempty"`
 	Address       string                 `protobuf:"bytes,4,opt,name=address,proto3" json:"address,omitempty"`
@@ -499,7 +499,7 @@ func (*UpdateUserByIDResponse) Descriptor() ([]byte, []int) {
 	return file_user_user_proto_rawDescGZIP(), []int{7}
 }
 
-func (x *UpdateUserByIDResponse) GetId() uint32 {
+func (x *UpdateUserByIDResponse) GetId() int64 {
 	if x != nil {
 		return x.Id
 	}
@@ -536,7 +536,7 @@ func (x *UpdateUserByIDResponse) GetCreatedAt() *timestamppb.Timestamp {
 
 type DeleteUserRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            uint32                 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -571,7 +571,7 @@ func (*DeleteUserRequest) Descriptor() ([]byte, []int) {
 	return file_user_user_proto_rawDescGZIP(), []int{8}
 }
 
-func (x *DeleteUserRequest) GetId() uint32 {
+func (x *DeleteUserRequest) GetId() int64 {
 	if x != nil {
 		return x.Id
 	}
@@ -639,7 +639,7 @@ const file_user_user_proto_rawDesc = "" +
 	"\fphone_number\x18\x01 \x01(\tR\vphoneNumber\x12\x1b\n" +
 	"\tfull_name\x18\x02 \x01(\tR\bfullName\"\xa1\x01\n" +
 	"\x14RegisterUserResponse\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\rR\x02id\x12!\n" +
+	"\x02id\x18\x01 \x01(\x03R\x02id\x12!\n" +
 	"\fphone_number\x18\x02 \x01(\tR\vphoneNumber\x12\x1b\n" +
 	"\tfull_name\x18\x03 \x01(\tR\bfullName\x129\n" +
 	"\n" +
@@ -648,23 +648,23 @@ const file_user_user_proto_rawDesc = "" +
 	"\fphone_number\x18\x01 \x01(\tR\vphoneNumber\x12\x1b\n" +
 	"\tfull_name\x18\x02 \x01(\tR\bfullName\"\xb8\x01\n" +
 	"\x11LoginUserResponse\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\rR\x02id\x12!\n" +
+	"\x02id\x18\x01 \x01(\x03R\x02id\x12!\n" +
 	"\fphone_number\x18\x02 \x01(\tR\vphoneNumber\x12\x1b\n" +
 	"\tfull_name\x18\x03 \x01(\tR\bfullName\x12\x18\n" +
 	"\aaddress\x18\x04 \x01(\tR\aaddress\x129\n" +
 	"\n" +
 	"created_at\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\"$\n" +
 	"\x12GetUserByIDRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\rR\x02id\"\xba\x01\n" +
+	"\x02id\x18\x01 \x01(\x03R\x02id\"\xba\x01\n" +
 	"\x13GetUserByIDResponse\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\rR\x02id\x12!\n" +
+	"\x02id\x18\x01 \x01(\x03R\x02id\x12!\n" +
 	"\fphone_number\x18\x02 \x01(\tR\vphoneNumber\x12\x1b\n" +
 	"\tfull_name\x18\x03 \x01(\tR\bfullName\x12\x18\n" +
 	"\aaddress\x18\x04 \x01(\tR\aaddress\x129\n" +
 	"\n" +
 	"created_at\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\"\xbb\x01\n" +
 	"\x15UpdateUserByIDRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\rR\x02id\x12&\n" +
+	"\x02id\x18\x01 \x01(\x03R\x02id\x12&\n" +
 	"\fphone_number\x18\x02 \x01(\tH\x00R\vphoneNumber\x88\x01\x01\x12 \n" +
 	"\tfull_name\x18\x03 \x01(\tH\x01R\bfullName\x88\x01\x01\x12\x1d\n" +
 	"\aaddress\x18\x04 \x01(\tH\x02R\aaddress\x88\x01\x01B\x0f\n" +
@@ -674,14 +674,14 @@ const file_user_user_proto_rawDesc = "" +
 	"\n" +
 	"\b_address\"\xbd\x01\n" +
 	"\x16UpdateUserByIDResponse\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\rR\x02id\x12!\n" +
+	"\x02id\x18\x01 \x01(\x03R\x02id\x12!\n" +
 	"\fphone_number\x18\x02 \x01(\tR\vphoneNumber\x12\x1b\n" +
 	"\tfull_name\x18\x03 \x01(\tR\bfullName\x12\x18\n" +
 	"\aaddress\x18\x04 \x01(\tR\aaddress\x129\n" +
 	"\n" +
 	"created_at\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\"#\n" +
 	"\x11DeleteUserRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\rR\x02id\"M\n" +
+	"\x02id\x18\x01 \x01(\x03R\x02id\"M\n" +
 	"\x12DeleteUserResponse\x12\x18\n" +
 	"\amessage\x18\x01 \x01(\tR\amessage\x12\x1d\n" +
 	"\n" +

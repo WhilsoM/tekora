@@ -43,7 +43,7 @@ type UpdateProductByIDResponse struct {
 }
 
 type ProductItem struct {
-	ID        uint32    `json:"id"`
+	ID        int64     `json:"id"`
 	Name      string    `json:"name"`
 	Price     uint32    `json:"price"`
 	Category  string    `json:"category"`
@@ -53,7 +53,7 @@ type ProductItem struct {
 }
 
 type ProductItemShort struct {
-	ID    uint32 `json:"id"`
+	ID    int64  `json:"id"`
 	Name  string `json:"name"`
 	Price uint32 `json:"price"`
 }

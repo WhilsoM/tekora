@@ -24,7 +24,7 @@ const (
 
 type ProductItem struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            uint32                 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 	Name          string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
 	Price         uint32                 `protobuf:"varint,3,opt,name=price,proto3" json:"price,omitempty"`
 	Category      string                 `protobuf:"bytes,4,opt,name=category,proto3" json:"category,omitempty"`
@@ -65,7 +65,7 @@ func (*ProductItem) Descriptor() ([]byte, []int) {
 	return file_product_product_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *ProductItem) GetId() uint32 {
+func (x *ProductItem) GetId() int64 {
 	if x != nil {
 		return x.Id
 	}
@@ -116,7 +116,7 @@ func (x *ProductItem) GetUpdatedAt() *timestamppb.Timestamp {
 
 type ProductItemShort struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            uint32                 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 	Name          string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
 	Price         uint32                 `protobuf:"varint,3,opt,name=price,proto3" json:"price,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -153,7 +153,7 @@ func (*ProductItemShort) Descriptor() ([]byte, []int) {
 	return file_product_product_proto_rawDescGZIP(), []int{1}
 }
 
-func (x *ProductItemShort) GetId() uint32 {
+func (x *ProductItemShort) GetId() int64 {
 	if x != nil {
 		return x.Id
 	}
@@ -272,7 +272,7 @@ func (x *GetProductsResponse) GetItems() []*ProductItemShort {
 
 type GetProductByIDRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            uint32                 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -307,7 +307,7 @@ func (*GetProductByIDRequest) Descriptor() ([]byte, []int) {
 	return file_product_product_proto_rawDescGZIP(), []int{4}
 }
 
-func (x *GetProductByIDRequest) GetId() uint32 {
+func (x *GetProductByIDRequest) GetId() int64 {
 	if x != nil {
 		return x.Id
 	}
@@ -360,7 +360,7 @@ func (x *GetProductByIDResponse) GetItem() *ProductItem {
 
 type DeleteProductByIDRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            uint32                 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -395,7 +395,7 @@ func (*DeleteProductByIDRequest) Descriptor() ([]byte, []int) {
 	return file_product_product_proto_rawDescGZIP(), []int{6}
 }
 
-func (x *DeleteProductByIDRequest) GetId() uint32 {
+func (x *DeleteProductByIDRequest) GetId() int64 {
 	if x != nil {
 		return x.Id
 	}
@@ -568,7 +568,7 @@ func (x *CreateProductResponse) GetItem() *ProductItem {
 
 type UpdateProductByIDRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            uint32                 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 	Name          *string                `protobuf:"bytes,2,opt,name=name,proto3,oneof" json:"name,omitempty"`
 	Price         *uint32                `protobuf:"varint,3,opt,name=price,proto3,oneof" json:"price,omitempty"`
 	Category      *string                `protobuf:"bytes,4,opt,name=category,proto3,oneof" json:"category,omitempty"`
@@ -607,7 +607,7 @@ func (*UpdateProductByIDRequest) Descriptor() ([]byte, []int) {
 	return file_product_product_proto_rawDescGZIP(), []int{10}
 }
 
-func (x *UpdateProductByIDRequest) GetId() uint32 {
+func (x *UpdateProductByIDRequest) GetId() int64 {
 	if x != nil {
 		return x.Id
 	}
@@ -692,7 +692,7 @@ const file_product_product_proto_rawDesc = "" +
 	"\n" +
 	"\x15product/product.proto\x12\aproduct\x1a\x1fgoogle/protobuf/timestamp.proto\"\xef\x01\n" +
 	"\vProductItem\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\rR\x02id\x12\x12\n" +
+	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12\x14\n" +
 	"\x05price\x18\x03 \x01(\rR\x05price\x12\x1a\n" +
 	"\bcategory\x18\x04 \x01(\tR\bcategory\x12\x14\n" +
@@ -702,7 +702,7 @@ const file_product_product_proto_rawDesc = "" +
 	"\n" +
 	"updated_at\x18\a \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\"L\n" +
 	"\x10ProductItemShort\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\rR\x02id\x12\x12\n" +
+	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12\x14\n" +
 	"\x05price\x18\x03 \x01(\rR\x05price\"B\n" +
 	"\x12GetProductsRequest\x12\x14\n" +
@@ -711,11 +711,11 @@ const file_product_product_proto_rawDesc = "" +
 	"\x13GetProductsResponse\x12/\n" +
 	"\x05items\x18\x01 \x03(\v2\x19.product.ProductItemShortR\x05items\"'\n" +
 	"\x15GetProductByIDRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\rR\x02id\"B\n" +
+	"\x02id\x18\x01 \x01(\x03R\x02id\"B\n" +
 	"\x16GetProductByIDResponse\x12(\n" +
 	"\x04item\x18\x01 \x01(\v2\x14.product.ProductItemR\x04item\"*\n" +
 	"\x18DeleteProductByIDRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\rR\x02id\"T\n" +
+	"\x02id\x18\x01 \x01(\x03R\x02id\"T\n" +
 	"\x19DeleteProductByIDResponse\x12\x18\n" +
 	"\amessage\x18\x01 \x01(\tR\amessage\x12\x1d\n" +
 	"\n" +
@@ -728,7 +728,7 @@ const file_product_product_proto_rawDesc = "" +
 	"\x15CreateProductResponse\x12(\n" +
 	"\x04item\x18\x01 \x01(\v2\x14.product.ProductItemR\x04item\"\xc4\x01\n" +
 	"\x18UpdateProductByIDRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\rR\x02id\x12\x17\n" +
+	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x17\n" +
 	"\x04name\x18\x02 \x01(\tH\x00R\x04name\x88\x01\x01\x12\x19\n" +
 	"\x05price\x18\x03 \x01(\rH\x01R\x05price\x88\x01\x01\x12\x1f\n" +
 	"\bcategory\x18\x04 \x01(\tH\x02R\bcategory\x88\x01\x01\x12\x19\n" +

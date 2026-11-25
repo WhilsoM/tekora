@@ -15,7 +15,7 @@ service ProductService {
 }
 
 message ProductItem {
-    uint32 id = 1;
+    int64 id = 1;
     string name = 2;
     uint32 price = 3;
     string category = 4;
@@ -25,7 +25,7 @@ message ProductItem {
 }
 
 message ProductItemShort {
-    uint32 id = 1;
+    int64 id = 1;
     string name = 2;
     uint32 price = 3;
 }
@@ -40,7 +40,7 @@ message GetProductsResponse {
 }
 
 message GetProductByIDRequest {
-    uint32 id = 1;
+    int64 id = 1;
 }
 
 message GetProductByIDResponse {
@@ -48,7 +48,7 @@ message GetProductByIDResponse {
 }
 
 message DeleteProductByIDRequest {
-    uint32 id = 1;
+    int64 id = 1;
 }
 
 message DeleteProductByIDResponse {
@@ -68,7 +68,7 @@ message CreateProductResponse {
 }
 
 message UpdateProductByIDRequest {
-    uint32 id = 1;
+    int64 id = 1;
     optional string name = 2;
     optional uint32 price = 3;
     optional string category = 4;

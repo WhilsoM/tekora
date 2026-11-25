@@ -20,7 +20,7 @@ message RegisterUserRequest {
 }
 
 message RegisterUserResponse {
-    uint32 id = 1;
+    int64 id = 1;
     string phone_number = 2;
     string full_name = 3;
     google.protobuf.Timestamp created_at = 4;
@@ -32,7 +32,7 @@ message LoginUserRequest {
 }
 
 message LoginUserResponse {
-    uint32 id = 1;
+    int64 id = 1;
     string phone_number = 2;
     string full_name = 3;
     string address = 4;
@@ -40,11 +40,11 @@ message LoginUserResponse {
 }
 
 message GetUserByIDRequest {
-    uint32 id = 1;
+    int64 id = 1;
 }
 
 message GetUserByIDResponse {
-    uint32 id = 1;
+    int64 id = 1;
     string phone_number = 2;
     string full_name = 3;
     string address = 4;
@@ -53,7 +53,7 @@ message GetUserByIDResponse {
 
 
 message UpdateUserByIDRequest {
-    uint32 id = 1;
+    int64 id = 1;
     optional string phone_number = 2;
     optional string full_name = 3;
     optional string address = 4;
@@ -61,7 +61,7 @@ message UpdateUserByIDRequest {
 
 
 message UpdateUserByIDResponse {
-    uint32 id = 1;
+    int64 id = 1;
     string phone_number = 2;
     string full_name = 3;
     string address = 4;
@@ -69,7 +69,7 @@ message UpdateUserByIDResponse {
 }
 
 message DeleteUserRequest {
-    uint32 id = 1;
+    int64 id = 1;
 }
 
 message DeleteUserResponse {

@@ -14,9 +14,9 @@ import (
 
 type userService interface {
 	CreateUser(context.Context, core.CreateUserPayload) (core.User, error)
-	GetUserByID(context.Context, uint32) (core.User, error)
-	UpdateUserByID(context.Context, uint32, map[string]any) (core.User, error)
-	DeleteUser(context.Context, uint32) (bool, error)
+	GetUserByID(context.Context, int64) (core.User, error)
+	UpdateUserByID(context.Context, int64, map[string]any) (core.User, error)
+	DeleteUser(context.Context, int64) (bool, error)
 }
 
 type userServer struct {

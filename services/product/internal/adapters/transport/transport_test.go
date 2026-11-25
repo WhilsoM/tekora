@@ -12,10 +12,10 @@ import (
 
 type productServiceStub struct {
 	getProductsFn    func(context.Context) ([]core.ProductItemShort, error)
-	getProductByIDFn func(context.Context, uint32) (core.ProductItem, error)
-	deleteProductFn  func(context.Context, uint32) error
+	getProductByIDFn func(context.Context, int64) (core.ProductItem, error)
+	deleteProductFn  func(context.Context, int64) error
 	createProductFn  func(context.Context, core.CreateProductPayload) (core.ProductItem, error)
-	updateProductFn  func(context.Context, uint32, map[string]any) (core.ProductItem, error)
+	updateProductFn  func(context.Context, int64, map[string]any) (core.ProductItem, error)
 }
 
 func (s *productServiceStub) GetProducts(ctx context.Context) ([]core.ProductItemShort, error) {
@@ -25,14 +25,14 @@ func (s *productServiceStub) GetProducts(ctx context.Context) ([]core.ProductIte
 	return s.getProductsFn(ctx)
 }
 
-func (s *productServiceStub) GetProductByID(ctx context.Context, id uint32) (core.ProductItem, error) {
+func (s *productServiceStub) GetProductByID(ctx context.Context, id int64) (core.ProductItem, error) {
 	if s.getProductByIDFn == nil {
 		panic("unexpected call: GetProductByID")
 	}
 	return s.getProductByIDFn(ctx, id)
 }
 
-func (s *productServiceStub) DeleteProductByID(ctx context.Context, id uint32) error {
+func (s *productServiceStub) DeleteProductByID(ctx context.Context, id int64) error {
 	if s.deleteProductFn == nil {
 		panic("unexpected call: DeleteProductByID")
 	}
@@ -46,7 +46,7 @@ func (s *productServiceStub) CreateProduct(ctx context.Context, payload core.Cre
 	return s.createProductFn(ctx, payload)
 }
 
-func (s *productServiceStub) UpdateProductByID(ctx context.Context, id uint32, updates map[string]any) (core.ProductItem, error) {
+func (s *productServiceStub) UpdateProductByID(ctx context.Context, id int64, updates map[string]any) (core.ProductItem, error) {
 	if s.updateProductFn == nil {
 		panic("unexpected call: UpdateProductByID")
 	}
@@ -176,10 +176,10 @@ func TestProductServer_GetProductByID(t *testing.T) {
 
 	expectedProduct := testProduct()
 
-	var receivedID uint32
+	var receivedID int64
 
 	fakeService := &productServiceStub{
-		getProductByIDFn: func(ctx context.Context, id uint32) (core.ProductItem, error) {
+		getProductByIDFn: func(ctx context.Context, id int64) (core.ProductItem, error) {
 			receivedID = id
 			return expectedProduct, nil
 		},
@@ -213,7 +213,7 @@ func TestProductServer_GetProductByID_ServiceError(t *testing.T) {
 	serviceErr := errors.New("product not found")
 
 	fakeService := &productServiceStub{
-		getProductByIDFn: func(ctx context.Context, id uint32) (core.ProductItem, error) {
+		getProductByIDFn: func(ctx context.Context, id int64) (core.ProductItem, error) {
 			return core.ProductItem{}, serviceErr
 		},
 	}
@@ -236,10 +236,10 @@ func TestProductServer_GetProductByID_ServiceError(t *testing.T) {
 
 func TestProductServer_DeleteProductByID(t *testing.T) {
 
-	var receivedID uint32
+	var receivedID int64
 
 	fakeService := &productServiceStub{
-		deleteProductFn: func(ctx context.Context, id uint32) error {
+		deleteProductFn: func(ctx context.Context, id int64) error {
 			receivedID = id
 			return nil
 		},
@@ -279,7 +279,7 @@ func TestProductServer_DeleteProductByID_ServiceError(t *testing.T) {
 	serviceErr := errors.New("delete failed")
 
 	fakeService := &productServiceStub{
-		deleteProductFn: func(ctx context.Context, id uint32) error {
+		deleteProductFn: func(ctx context.Context, id int64) error {
 			return serviceErr
 		},
 	}
@@ -391,11 +391,11 @@ func TestProductServer_UpdateProductByID(t *testing.T) {
 	category := "Hardware"
 	stock := uint32(20)
 
-	var receivedID uint32
+	var receivedID int64
 	var receivedUpdates map[string]any
 
 	fakeService := &productServiceStub{
-		updateProductFn: func(ctx context.Context, id uint32, updates map[string]any) (core.ProductItem, error) {
+		updateProductFn: func(ctx context.Context, id int64, updates map[string]any) (core.ProductItem, error) {
 			receivedID = id
 			receivedUpdates = updates
 			return expectedProduct, nil
@@ -479,7 +479,7 @@ func TestProductServer_UpdateProductByID_ServiceError(t *testing.T) {
 	name := "Updated Keyboard"
 
 	fakeService := &productServiceStub{
-		updateProductFn: func(ctx context.Context, id uint32, updates map[string]any) (core.ProductItem, error) {
+		updateProductFn: func(ctx context.Context, id int64, updates map[string]any) (core.ProductItem, error) {
 			return core.ProductItem{}, serviceErr
 		},
 	}

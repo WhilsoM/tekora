@@ -86,8 +86,8 @@ func (h *ProductClient) handleGRPCError(
 	httpjson.WriteJSONError(w, httpStatus, errorCode, message)
 }
 
-func parseProductID(w http.ResponseWriter, r *http.Request) (uint32, bool) {
-	id, err := strconv.ParseUint(chi.URLParam(r, "id"), 10, 32)
+func parseProductID(w http.ResponseWriter, r *http.Request) (int64, bool) {
+	id, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 
 	if err != nil || id == 0 {
 		httpjson.WriteJSONError(
@@ -99,7 +99,7 @@ func parseProductID(w http.ResponseWriter, r *http.Request) (uint32, bool) {
 		return 0, false
 	}
 
-	return uint32(id), true
+	return id, true
 }
 
 func toProductItem(item *productpb.ProductItem) ProductItem {

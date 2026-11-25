@@ -71,7 +71,7 @@ func (h *UserClient) RegisterUser(
 	}
 
 	accessToken, refreshToken, err := myjwt.CreateTokens(
-		strconv.FormatUint(uint64(registeredUser.GetId()), 10),
+		strconv.FormatInt(registeredUser.GetId(), 10),
 	)
 	if err != nil {
 		slog.Error("failed to create access/refresh token", "error", err)
@@ -111,7 +111,7 @@ func (h *UserClient) GetUserByID(
 		return
 	}
 
-	userID, err := strconv.ParseUint(idStr, 10, 32)
+	userID, err := strconv.ParseInt(idStr, 10, 64)
 	if err != nil {
 		slog.Error("failed to parse id to int", "id_str", idStr, "error", err)
 
@@ -123,7 +123,7 @@ func (h *UserClient) GetUserByID(
 	defer cancel()
 
 	userRes, err := h.client.GetUserByID(ctx, &userpb.GetUserByIDRequest{
-		Id: uint32(userID),
+		Id: userID,
 	})
 	if err != nil {
 		slog.Error("failed to get user", "error", err)
@@ -157,7 +157,7 @@ func (h *UserClient) UpdateUserByID(
 		return
 	}
 
-	userID, err := strconv.ParseUint(idStr, 10, 32)
+	userID, err := strconv.ParseInt(idStr, 10, 64)
 	if err != nil {
 		slog.Error("failed to parse id to int", "id_str", idStr, "error", err)
 
@@ -184,7 +184,7 @@ func (h *UserClient) UpdateUserByID(
 	}
 
 	userProto := &userpb.UpdateUserByIDRequest{
-		Id:          uint32(userID),
+		Id:          userID,
 		PhoneNumber: req.PhoneNumber,
 		FullName:    req.FullName,
 		Address:     req.Address,
@@ -226,7 +226,7 @@ func (h *UserClient) DeleteUserByID(
 		return
 	}
 
-	userID, err := strconv.ParseUint(idStr, 10, 32)
+	userID, err := strconv.ParseInt(idStr, 10, 64)
 	if err != nil {
 		slog.Error("failed to parse id to int", "id_str", idStr, "error", err)
 
@@ -238,7 +238,7 @@ func (h *UserClient) DeleteUserByID(
 	defer cancel()
 
 	deleteRes, err := h.client.DeleteUser(ctx, &userpb.DeleteUserRequest{
-		Id: uint32(userID),
+		Id: userID,
 	})
 	if err != nil {
 		slog.Error("failed to delete user", "error", err)

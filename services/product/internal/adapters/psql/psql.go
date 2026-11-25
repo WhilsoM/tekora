@@ -41,7 +41,7 @@ func (db *productRepository) GetProducts(ctx context.Context) ([]core.ProductIte
 	return returnedProducts, nil
 }
 
-func (db *productRepository) GetProductByID(ctx context.Context, id uint32) (core.ProductItem, error) {
+func (db *productRepository) GetProductByID(ctx context.Context, id int64) (core.ProductItem, error) {
 	var product ProductItem
 	err := db.gorm.WithContext(ctx).Where("id = ?", id).First(&product).Error
 	if err != nil {
@@ -59,7 +59,7 @@ func (db *productRepository) GetProductByID(ctx context.Context, id uint32) (cor
 	}, nil
 }
 
-func (db *productRepository) DeleteProductByID(ctx context.Context, id uint32) error {
+func (db *productRepository) DeleteProductByID(ctx context.Context, id int64) error {
 	var product ProductItem
 	res := db.gorm.WithContext(ctx).Where("id = ?", id).Delete(&product)
 	if res.Error != nil {
@@ -97,7 +97,7 @@ func (db *productRepository) CreateProduct(ctx context.Context, payload core.Cre
 	}, nil
 }
 
-func (db *productRepository) UpdateProductByID(ctx context.Context, id uint32, updates map[string]any) (core.ProductItem, error) {
+func (db *productRepository) UpdateProductByID(ctx context.Context, id int64, updates map[string]any) (core.ProductItem, error) {
 	if len(updates) == 0 {
 		return core.ProductItem{}, errors.New("no fields to update")
 	}

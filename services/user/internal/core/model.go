@@ -3,7 +3,7 @@ package core
 import "time"
 
 type User struct {
-	ID          uint32
+	ID          int64
 	FullName    string
 	PhoneNumber string
 	Address     string
