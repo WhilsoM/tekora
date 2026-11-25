@@ -1,0 +1,79 @@
+syntax = "proto3";
+
+option go_package = "tekora/pkg/gen/order;orderpb";
+
+import "google/protobuf/timestamp.proto";
+
+service OrderService {
+    rpc CreateOrder(CreateOrderRequest) returns (CreateOrderResponse);
+    rpc GetOrderByID(GetOrderByIDRequest) returns (GetOrderByIDResponse);
+    rpc DeleteOrderByID(DeleteOrderByIDRequest) returns (DeleteOrderByIDResponse);
+    rpc UpdateOrderByID(UpdateOrderByIDRequest) returns (UpdateOrderByIDResponse);
+}
+
+enum OrderStatus {
+    ORDER_STATUS_UNSPECIFIED = 0;
+    ORDER_STATUS_PENDING = 1;
+    ORDER_STATUS_PROCESSING = 2;
+    ORDER_STATUS_COMPLETED = 3;
+    ORDER_STATUS_CANCELLED = 4;
+}
+
+message OrderItem {
+    int64 id = 1;
+    int64 order_id = 2;
+    int64 product_id = 3;
+    string product_name = 4;
+    int64 unit_price = 5;
+    int32 quantity = 6;
+}
+
+message Order {
+    int64 id = 1;
+    int64 user_id = 2;
+    int64 total_amount = 3;
+    string currency = 4;
+    OrderStatus status = 5;
+    google.protobuf.Timestamp created_at = 6;
+}
+
+message CreateOrderItem {
+    int64 product_id = 1;
+    int32 quantity = 2;
+}
+
+message CreateOrderRequest {
+    int64 user_id = 1;
+    repeated CreateOrderItem items = 2;
+}
+
+message CreateOrderResponse {
+    Order order = 1;
+}
+
+message GetOrderByIDRequest {
+    int64 id = 1;
+}
+
+message GetOrderByIDResponse {
+    Order order = 1;
+    repeated OrderItem items = 2;
+}
+
+// todo: not now
+message DeleteOrderByIDRequest {
+    int64 id = 1;
+}
+
+message DeleteOrderByIDResponse {
+    string message = 1;
+}
+
+message UpdateOrderByIDRequest {
+    int64 id = 1;
+    optional OrderStatus status = 2;
+}
+
+message UpdateOrderByIDResponse {
+    Order order = 1;
+}

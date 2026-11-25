@@ -32,10 +32,10 @@ type CreateProductResponse struct {
 }
 
 type UpdateProductByIDRequest struct {
-	Name     string `json:"name"`
-	Price    uint32 `json:"price"`
-	Category string `json:"category"`
-	Stock    uint32 `json:"stock"`
+	Name     *string `json:"name"`
+	Price    *uint32 `json:"price"`
+	Category *string `json:"category"`
+	Stock    *uint32 `json:"stock"`
 }
 
 type UpdateProductByIDResponse struct {

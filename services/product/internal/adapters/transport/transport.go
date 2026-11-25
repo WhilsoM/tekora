@@ -2,6 +2,8 @@ package transport
 
 import (
 	"context"
+	"errors"
+	"log"
 	productpb "tekora/pkg/gen/product"
 	"tekora/services/product/internal/core"
 
@@ -111,13 +113,36 @@ func (s *productServer) CreateProduct(ctx context.Context, req *productpb.Create
 }
 
 func (s *productServer) UpdateProductByID(ctx context.Context, req *productpb.UpdateProductByIDRequest) (*productpb.UpdateProductByIDResponse, error) {
-	updates := map[string]any{
-		"Name":     req.GetName(),
-		"Price":    req.GetPrice(),
-		"Category": req.GetCategory(),
-		"Stock":    req.GetStock(),
+	updates := make(map[string]any)
+
+	if req.Name != nil {
+		updates["Name"] = *req.Name
 	}
 
+	if req.Price != nil {
+		updates["Price"] = *req.Price
+	}
+
+	if req.Category != nil {
+		updates["Category"] = *req.Category
+	}
+
+	if req.Stock != nil {
+		updates["Stock"] = *req.Stock
+	}
+
+	if len(updates) == 0 {
+		return nil, errors.New("no updates")
+	}
+	log.Printf(
+		"fields: name=%v price=%v category=%v stock=%v",
+		req.Name != nil,
+		req.Price != nil,
+		req.Category != nil,
+		req.Stock != nil,
+	)
+
+	log.Printf("updates: %#v", updates)
 	product, err := s.svc.UpdateProductByID(ctx, req.GetId(), updates)
 	if err != nil {
 		return nil, err
