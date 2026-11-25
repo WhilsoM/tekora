@@ -1,6 +1,1 @@
-# tekora
-
-tasks
-
-- validation in the gateway register user
-- repository methods
+# tekora - e-commerce backend application
