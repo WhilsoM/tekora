@@ -237,7 +237,7 @@ func (h *UserClient) DeleteUserByID(
 	ctx, cancel := context.WithTimeout(r.Context(), userHandlerTimeout)
 	defer cancel()
 
-	_, err = h.client.DeleteUser(ctx, &userpb.DeleteUserRequest{
+	deleteRes, err := h.client.DeleteUser(ctx, &userpb.DeleteUserRequest{
 		Id: uint32(userID),
 	})
 	if err != nil {
@@ -247,7 +247,12 @@ func (h *UserClient) DeleteUserByID(
 		return
 	}
 
-	if err := httpjson.MyJSONResponse(w, http.StatusNoContent, nil); err != nil {
+	res := DeleteUserResponse{
+		Message:   deleteRes.Message,
+		IsSuccess: deleteRes.IsSuccess,
+	}
+
+	if err := httpjson.MyJSONResponse(w, http.StatusNoContent, res); err != nil {
 		slog.Error("failed to encode response", "error", err)
 	}
 }
