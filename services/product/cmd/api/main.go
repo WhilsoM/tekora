@@ -2,10 +2,13 @@ package main
 
 import (
 	"context"
+	"errors"
 	"log"
 	"log/slog"
 	"net"
 	"os"
+	"os/signal"
+	"syscall"
 	productpb "tekora/pkg/gen/product"
 	"tekora/pkg/postgres"
 	"tekora/services/product/internal/adapters/psql"
@@ -74,8 +77,47 @@ func run() error {
 
 	logger.Info("product grpc server started", "port", port)
 
-	if err := grpcServer.Serve(listener); err != nil {
-		return err
+	shutdownCtx, stop := signal.NotifyContext(
+		context.Background(),
+		os.Interrupt,
+		syscall.SIGTERM,
+	)
+	defer stop()
+
+	serveErr := make(chan error, 1)
+
+	go func() {
+		serveErr <- grpcServer.Serve(listener)
+	}()
+
+	select {
+	case err := <-serveErr:
+		if err != nil && !errors.Is(err, grpc.ErrServerStopped) {
+			return err
+		}
+
+	case <-shutdownCtx.Done():
+		logger.Info("shutdown signal received")
+	}
+
+	logger.Info("graceful shutdown started")
+
+	shutdownDone := make(chan struct{})
+
+	go func() {
+		grpcServer.GracefulStop()
+		close(shutdownDone)
+	}()
+
+	select {
+	case <-shutdownDone:
+		logger.Info("grpc server stopped gracefully")
+
+	case <-time.After(20 * time.Second):
+		logger.Warn("graceful shutdown timeout, forcing stop")
+
+		grpcServer.Stop()
+		<-shutdownDone
 	}
 
 	return nil
