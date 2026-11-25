@@ -2,8 +2,13 @@ package main
 
 import (
 	"context"
+	"errors"
 	"log"
+	"log/slog"
 	"net"
+	"os"
+	"os/signal"
+	"syscall"
 	userpb "tekora/pkg/gen/user"
 	"tekora/pkg/postgres"
 	"tekora/services/user/internal/adapters/psql"
@@ -23,9 +28,11 @@ func main() {
 
 func run() error {
 	cfg := config.MustConfig("services/user/.env")
+	logger := slog.New(slog.NewTextHandler(os.Stdout, nil))
 
 	listener, err := net.Listen("tcp", ":50051") // #nosec G102 -- intentionally accessible through private Docker network
 	if err != nil {
+		logger.Error("failed to listen tcp connection", "error", err)
 		return err
 	}
 
@@ -42,20 +49,22 @@ func run() error {
 		ConnMaxIdleTime: cfg.ConnMaxIdleTime,
 	})
 	if err != nil {
+		logger.Error("failed to connect postgresql", "error", err)
 		return err
 	}
 
 	sqlDB, err := db.DB()
 	if err != nil {
+		logger.Error("failed to take db for gorm", "error", err)
 		return err
 	}
 	defer func() {
 		if err := sqlDB.Close(); err != nil {
-			log.Printf("failed to close db connection: %v", err)
+			logger.Error("failed to close db connection", "error", err)
 		}
 	}()
 
-	log.Println("PostgreSQL connected")
+	logger.Info("Postgresql connected")
 
 	grpcServer := grpc.NewServer()
 
@@ -65,10 +74,49 @@ func run() error {
 
 	userpb.RegisterUserServiceServer(grpcServer, grpcTransport)
 
-	log.Println("user grpc server started on :50051")
+	logger.Info("user grpc server started on :50051")
 
-	if err := grpcServer.Serve(listener); err != nil {
-		return err
+	shutdownCtx, stop := signal.NotifyContext(
+		context.Background(),
+		os.Interrupt,
+		syscall.SIGTERM,
+	)
+	defer stop()
+
+	serveErr := make(chan error, 1)
+
+	go func() {
+		serveErr <- grpcServer.Serve(listener)
+	}()
+
+	select {
+	case err := <-serveErr:
+		if err != nil && !errors.Is(err, grpc.ErrServerStopped) {
+			return err
+		}
+
+	case <-shutdownCtx.Done():
+		logger.Info("shutdown signal received")
+	}
+
+	logger.Info("graceful shutdown started")
+
+	shutdownDone := make(chan struct{})
+
+	go func() {
+		grpcServer.GracefulStop()
+		close(shutdownDone)
+	}()
+
+	select {
+	case <-shutdownDone:
+		logger.Info("grpc server stopped gracefully")
+
+	case <-time.After(20 * time.Second):
+		logger.Warn("graceful shutdown timeout, forcing stop")
+
+		grpcServer.Stop()
+		<-shutdownDone
 	}
 
 	return nil
