@@ -45,3 +45,7 @@ type RefreshTokenRequest struct {
 type RefreshTokenResponse struct {
 	AccessToken string `json:"access_token"`
 }
+type DeleteUserResponse struct {
+	Message   string `json:"message"`
+	IsSuccess bool   `json:"is_success"`
+}

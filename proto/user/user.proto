@@ -72,4 +72,7 @@ message DeleteUserRequest {
     uint32 id = 1;
 }
 
-message DeleteUserResponse {}
+message DeleteUserResponse {
+    string message = 1;
+    bool is_success = 2;
+}

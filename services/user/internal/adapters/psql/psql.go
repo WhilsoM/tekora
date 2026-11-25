@@ -93,16 +93,16 @@ func (repo *userRepository) UpdateUserByID(ctx context.Context, id uint32, updat
 	}, nil
 }
 
-func (repo *userRepository) DeleteUser(ctx context.Context, id uint32) error {
+func (repo *userRepository) DeleteUser(ctx context.Context, id uint32) (bool, error) {
 	result := repo.db.WithContext(ctx).Where("id = ?", id).Delete(&User{})
 
 	if result.Error != nil {
-		return result.Error
+		return false, result.Error
 	}
 
 	if result.RowsAffected == 0 {
-		return core.ErrUserNotFound
+		return false, core.ErrUserNotFound
 	}
 
-	return nil
+	return true, nil
 }

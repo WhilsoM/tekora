@@ -16,7 +16,7 @@ type userService interface {
 	CreateUser(context.Context, core.CreateUserPayload) (core.User, error)
 	GetUserByID(context.Context, uint32) (core.User, error)
 	UpdateUserByID(context.Context, uint32, map[string]any) (core.User, error)
-	DeleteUser(context.Context, uint32) error
+	DeleteUser(context.Context, uint32) (bool, error)
 }
 
 type userServer struct {
@@ -135,8 +135,10 @@ func (server *userServer) UpdateUserByID(ctx context.Context, req *userpb.Update
 }
 
 func (server *userServer) DeleteUser(ctx context.Context, req *userpb.DeleteUserRequest) (*userpb.DeleteUserResponse, error) {
-	err := server.svc.DeleteUser(ctx, req.Id)
+	isSuccess, err := server.svc.DeleteUser(ctx, req.Id)
 	if err != nil {
+		slog.Info("delete user has an error", "error", err, "is_success", isSuccess)
+
 		if errors.Is(err, core.ErrUserNotFound) {
 			return nil, status.Error(
 				codes.NotFound,
@@ -150,5 +152,8 @@ func (server *userServer) DeleteUser(ctx context.Context, req *userpb.DeleteUser
 		)
 	}
 
-	return &userpb.DeleteUserResponse{}, nil
+	return &userpb.DeleteUserResponse{
+		Message:   "user deleted successfuly",
+		IsSuccess: isSuccess,
+	}, nil
 }
