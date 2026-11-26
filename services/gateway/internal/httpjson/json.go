@@ -33,8 +33,6 @@ type errorDetail struct {
 	Message string `json:"message"`
 }
 
-// MyJSONDecode reads and validates JSON.
-// If decoding fails, it sends an error response and returns false.
 func MyJSONDecode(w http.ResponseWriter, r *http.Request, dst any) bool {
 	if err := decodeJSON(w, r, dst); err != nil {
 		writeDecodeError(w, err)
@@ -44,7 +42,6 @@ func MyJSONDecode(w http.ResponseWriter, r *http.Request, dst any) bool {
 	return true
 }
 
-// WriteJSONError sends a JSON error response.
 func WriteJSONError(
 	w http.ResponseWriter,
 	status int,
@@ -63,7 +60,6 @@ func WriteJSONError(
 	}
 }
 
-// MyJSONResponse sends a JSON response with the given HTTP status.
 func MyJSONResponse(
 	w http.ResponseWriter,
 	status int,
@@ -109,8 +105,6 @@ func MyJSONResponse(
 
 	return nil
 }
-
-// Everything below is private to this package.
 
 func decodeJSON(
 	w http.ResponseWriter,

@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-	_ = config.MustConfig("services/user/.env")
+	_ = config.MustConfig("services/order/.env")
 
 	logger := slog.New(slog.NewTextHandler(os.Stdout, nil))
 

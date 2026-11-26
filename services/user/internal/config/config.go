@@ -16,6 +16,7 @@ type Config struct {
 	MaxIdleConns    int           `env:"DB_MAX_IDLE_CONNS" envDefault:"5"`
 	ConnMaxLifetime time.Duration `env:"DB_CONN_MAX_LIFETIME" envDefault:"1h"`
 	ConnMaxIdleTime time.Duration `env:"DB_CONN_MAX_IDLE_TIME" envDefault:"10m"`
+	GrpcAddr        string        `env:"GRPC_ADDR" envDefault:":50051"`
 }
 
 func MustConfig(envPath string) *Config {

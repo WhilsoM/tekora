@@ -3,76 +3,106 @@ package myjwt
 import (
 	"crypto/rand"
 	"errors"
+	"fmt"
+	"strings"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
 )
 
-var secretKey = []byte("secret-key")
-var refreshSecret = []byte("secret-key2")
+const (
+	accessTokenTTL  = 15 * time.Minute
+	refreshTokenTTL = 7 * 24 * time.Hour
+
+	accessTokenType  = "access"
+	refreshTokenType = "refresh"
+)
+
+type TokenManager struct {
+	accessSecret  []byte
+	refreshSecret []byte
+}
 
 type Claims struct {
 	Type string `json:"type"`
 	jwt.RegisteredClaims
 }
 
-func createRefreshToken(userID string) (string, error) {
-	refreshClaims := jwt.NewWithClaims(
-		jwt.SigningMethodHS256,
-		Claims{
-			Type: "refresh",
-			RegisteredClaims: jwt.RegisteredClaims{
-				Subject: userID,
-				// todo: put into config or const  7 * 24 * time.Hour
-				ExpiresAt: jwt.NewNumericDate(time.Now().Add(7 * 24 * time.Hour)),
-				IssuedAt:  jwt.NewNumericDate(time.Now()),
-				ID:        rand.Text(),
-			},
-		},
-	)
+func NewManager(accessSecret, refreshSecret string) (*TokenManager, error) {
+	accessSecret = strings.TrimSpace(accessSecret)
+	refreshSecret = strings.TrimSpace(refreshSecret)
 
-	refreshToken, err := refreshClaims.SignedString(refreshSecret)
-	if err != nil {
-		return "", err
+	if len(accessSecret) < 32 {
+		return nil, errors.New("access secret must be at least 32 bytes")
 	}
 
-	return refreshToken, nil
+	if len(refreshSecret) < 32 {
+		return nil, errors.New("refresh secret must be at least 32 bytes")
+	}
+
+	if accessSecret == refreshSecret {
+		return nil, errors.New("access and refresh secrets must be different")
+	}
+
+	return &TokenManager{
+		accessSecret:  []byte(accessSecret),
+		refreshSecret: []byte(refreshSecret),
+	}, nil
 }
 
-func CreateAccessToken(userID string) (string, error) {
-	accessClaims := jwt.NewWithClaims(
-		jwt.SigningMethodHS256,
-		Claims{
-			Type: "access",
-			RegisteredClaims: jwt.RegisteredClaims{
-				Subject: userID,
-				// todo: put into config or const  7 * 24 * time.Hour
-				ExpiresAt: jwt.NewNumericDate(time.Now().Add(15 * time.Minute)),
-				IssuedAt:  jwt.NewNumericDate(time.Now()),
-				ID:        rand.Text(),
-			},
-		},
-	)
-
-	accessToken, err := accessClaims.SignedString(secretKey)
-	if err != nil {
-		return "", err
+func (m *TokenManager) createToken(
+	userID string,
+	tokenType string,
+	ttl time.Duration,
+	secret []byte,
+) (string, error) {
+	if strings.TrimSpace(userID) == "" {
+		return "", errors.New("user id is required")
 	}
 
-	return accessToken, nil
+	now := time.Now()
+
+	claims := Claims{
+		Type: tokenType,
+		RegisteredClaims: jwt.RegisteredClaims{
+			Subject:   userID,
+			ExpiresAt: jwt.NewNumericDate(now.Add(ttl)),
+			IssuedAt:  jwt.NewNumericDate(now),
+			ID:        rand.Text(),
+		},
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+
+	signedToken, err := token.SignedString(secret)
+	if err != nil {
+		return "", fmt.Errorf("sign %s token: %w", tokenType, err)
+	}
+
+	return signedToken, nil
 }
 
-func CreateTokens(userID string) (string, string, error) {
-	if userID == "" {
-		return "", "", errors.New("user id is required")
-	}
+func (m *TokenManager) CreateAccessToken(userID string) (string, error) {
+	return m.createToken(
+		userID,
+		accessTokenType,
+		accessTokenTTL,
+		m.accessSecret,
+	)
+}
 
-	accessToken, err := CreateAccessToken(userID)
+func (m *TokenManager) CreateTokens(userID string) (string, string, error) {
+	accessToken, err := m.CreateAccessToken(userID)
 	if err != nil {
 		return "", "", err
 	}
 
-	refreshToken, err := createRefreshToken(userID)
+	refreshToken, err := m.createToken(
+		userID,
+		refreshTokenType,
+		refreshTokenTTL,
+		m.refreshSecret,
+	)
 	if err != nil {
 		return "", "", err
 	}
@@ -80,44 +110,59 @@ func CreateTokens(userID string) (string, string, error) {
 	return accessToken, refreshToken, nil
 }
 
-func VerifyAccessToken(tokenString string) (*Claims, error) {
-	return verifyToken(tokenString, secretKey, "access")
+func (m *TokenManager) VerifyAccessToken(tokenString string) (*Claims, error) {
+	return m.verifyToken(
+		tokenString,
+		m.accessSecret,
+		accessTokenType,
+	)
 }
 
-func VerifyRefreshToken(tokenString string) (*Claims, error) {
-	return verifyToken(tokenString, refreshSecret, "refresh")
+func (m *TokenManager) VerifyRefreshToken(tokenString string) (*Claims, error) {
+	return m.verifyToken(
+		tokenString,
+		m.refreshSecret,
+		refreshTokenType,
+	)
 }
 
-func verifyToken(
+func (m *TokenManager) verifyToken(
 	tokenString string,
 	secret []byte,
 	expectedType string,
 ) (*Claims, error) {
+	if tokenString == "" {
+		return nil, errors.New("token is required")
+	}
+
 	claims := &Claims{}
 
-	token, err := jwt.ParseWithClaims(tokenString,
+	token, err := jwt.ParseWithClaims(
+		tokenString,
 		claims,
 		func(token *jwt.Token) (any, error) {
 			return secret, nil
 		},
-		jwt.WithValidMethods(
-			[]string{jwt.SigningMethodHS256.Alg()},
-		),
+		jwt.WithValidMethods([]string{
+			jwt.SigningMethodHS256.Alg(),
+		}),
 		jwt.WithExpirationRequired(),
+		jwt.WithIssuedAt(),
 	)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("verify %s token: %w", expectedType, err)
 	}
+
 	if !token.Valid {
 		return nil, errors.New("invalid token")
 	}
+
 	if claims.Type != expectedType {
-		return nil, errors.New("unexpected type")
+		return nil, errors.New("unexpected token type")
 	}
 
-	userID, err := claims.GetSubject()
-	if err != nil || userID == "" {
-		return nil, errors.New("missing or invalid sub claim")
+	if claims.Subject == "" {
+		return nil, errors.New("missing subject claim")
 	}
 
 	return claims, nil

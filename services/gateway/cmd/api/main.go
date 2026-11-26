@@ -4,17 +4,17 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"os"
 	productpb "tekora/pkg/gen/product"
 	userpb "tekora/pkg/gen/user"
+	grpcconn "tekora/services/gateway/internal/clients/grpc_conn"
 	"tekora/services/gateway/internal/clients/product"
 	"tekora/services/gateway/internal/clients/user"
+	"tekora/services/gateway/internal/config"
+	"tekora/services/gateway/internal/myjwt"
 	"time"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
 )
 
 func main() {
@@ -24,48 +24,34 @@ func main() {
 }
 
 func run() error {
-	addr := os.Getenv("USER_GRPC_ADDR")
-	if addr == "" {
-		addr = "user:50051"
-	}
+	cfg := config.MustConfig("services/gateway/.env")
 
-	conn, err := grpc.NewClient(
-		addr,
-		grpc.WithTransportCredentials(insecure.NewCredentials()),
+	tokenManager, err := myjwt.NewManager(
+		cfg.AccessSecretKey,
+		cfg.RefreshSecretKey,
 	)
 	if err != nil {
-		return fmt.Errorf("failed to create user grpc connection: %w", err)
-	}
-	defer func() {
-		if err := conn.Close(); err != nil {
-			log.Printf("failed to close gRPC connection: %v", err)
-		}
-	}()
-
-	userServiceClient := userpb.NewUserServiceClient(conn)
-
-	userHandler := user.NewUserClient(userServiceClient)
-
-	productAddr := os.Getenv("PRODUCT_GRPC_ADDR")
-	if productAddr == "" {
-		productAddr = "product:50052"
+		return fmt.Errorf("initialize token manager: %w", err)
 	}
 
-	productConn, err := grpc.NewClient(
-		productAddr,
-		grpc.WithTransportCredentials(insecure.NewCredentials()),
-	)
+	userConn, err := grpcconn.NewConnection(cfg.UserGRPCAddr)
 	if err != nil {
-		return fmt.Errorf("failed to create product grpc connection: %w", err)
+		return fmt.Errorf("connect to user service: %w", err)
 	}
-	defer func() {
-		if err := productConn.Close(); err != nil {
-			log.Printf("failed to close gRPC connection: %v", err)
-		}
-	}()
+	defer grpcconn.CloseConnection(userConn)
 
+	productConn, err := grpcconn.NewConnection(cfg.ProductGRPCAddr)
+	if err != nil {
+		return fmt.Errorf("connect to product service: %w", err)
+	}
+	defer grpcconn.CloseConnection(productConn)
+
+	// User service
+	userServiceClient := userpb.NewUserServiceClient(userConn)
+	userHandler := user.NewUserClient(userServiceClient, tokenManager)
+
+	// Product service
 	productServiceClient := productpb.NewProductServiceClient(productConn)
-
 	productHandler := product.NewProductClient(productServiceClient)
 
 	router := chi.NewRouter()
@@ -79,10 +65,8 @@ func run() error {
 		productHandler.InitProductHandlers(r)
 	})
 
-	log.Println("Gateway started on :8080")
-
 	server := &http.Server{
-		Addr:              ":8080",
+		Addr:              cfg.HTTPAddr,
 		Handler:           router,
 		ReadHeaderTimeout: 5 * time.Second,
 		ReadTimeout:       15 * time.Second,
@@ -90,9 +74,7 @@ func run() error {
 		IdleTimeout:       60 * time.Second,
 	}
 
-	if err := server.ListenAndServe(); err != nil {
-		return err
-	}
+	log.Println("Gateway started on", cfg.HTTPAddr)
 
-	return nil
+	return server.ListenAndServe()
 }

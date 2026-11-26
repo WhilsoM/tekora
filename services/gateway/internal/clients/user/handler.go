@@ -17,11 +17,12 @@ import (
 const userHandlerTimeout = 5 * time.Second
 
 type UserClient struct {
-	client userpb.UserServiceClient
+	client       userpb.UserServiceClient
+	tokenManager *myjwt.TokenManager
 }
 
-func NewUserClient(client userpb.UserServiceClient) *UserClient {
-	return &UserClient{client: client}
+func NewUserClient(client userpb.UserServiceClient, tokenManager *myjwt.TokenManager) *UserClient {
+	return &UserClient{client: client, tokenManager: tokenManager}
 }
 
 func (h *UserClient) InitUserHandlers(r chi.Router) {
@@ -30,7 +31,7 @@ func (h *UserClient) InitUserHandlers(r chi.Router) {
 		r.Post("/refresh", h.RefreshToken)
 
 		r.Group(func(r chi.Router) {
-			r.Use(mymiddlewares.AuthMiddleware)
+			r.Use(mymiddlewares.AuthMiddleware(h.tokenManager))
 
 			r.Get("/me", h.GetUserByID)
 			r.Patch("/me", h.UpdateUserByID)
@@ -70,7 +71,7 @@ func (h *UserClient) RegisterUser(
 		return
 	}
 
-	accessToken, refreshToken, err := myjwt.CreateTokens(
+	accessToken, refreshToken, err := h.tokenManager.CreateTokens(
 		strconv.FormatInt(registeredUser.GetId(), 10),
 	)
 	if err != nil {
@@ -267,7 +268,7 @@ func (h *UserClient) RefreshToken(
 		return
 	}
 
-	claims, err := myjwt.VerifyRefreshToken(req.RefreshToken)
+	claims, err := h.tokenManager.VerifyRefreshToken(req.RefreshToken)
 	if err != nil {
 		slog.Warn("failed to verify refresh token", "error", err)
 
@@ -280,7 +281,7 @@ func (h *UserClient) RefreshToken(
 		return
 	}
 
-	accessToken, err := myjwt.CreateAccessToken(claims.Subject)
+	accessToken, err := h.tokenManager.CreateAccessToken(claims.Subject)
 	if err != nil {
 		slog.Error("failed to create access token", "error", err)
 

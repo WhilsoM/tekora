@@ -1,4 +1,16 @@
 .git
+**/.git
+
 .env
 **/.env
+
 .DS_Store
+**/.DS_Store
+
+.idea/
+.vscode/
+
+**/coverage/
+**/tmp/
+**/bin/
+**/node_modules/

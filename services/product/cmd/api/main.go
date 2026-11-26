@@ -30,8 +30,7 @@ func run() error {
 	cfg := config.MustConfig("services/product/.env")
 	logger := slog.New(slog.NewTextHandler(os.Stdout, nil))
 
-	port := ":50052"
-	listener, err := net.Listen("tcp", port) // #nosec G102 -- intentionally accessible through private Docker network
+	listener, err := net.Listen("tcp", cfg.GrpcAddr)
 	if err != nil {
 		logger.Error("failed to listen tcp connection", "error", err)
 		return err
@@ -75,7 +74,7 @@ func run() error {
 
 	productpb.RegisterProductServiceServer(grpcServer, grpcTransport)
 
-	logger.Info("product grpc server started", "port", port)
+	logger.Info("product grpc server started", "addr", cfg.GrpcAddr)
 
 	shutdownCtx, stop := signal.NotifyContext(
 		context.Background(),
